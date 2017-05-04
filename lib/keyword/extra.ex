@@ -87,27 +87,4 @@ defmodule Keyword.Extra do
   end
 
 
-  @doc """
-  Returns the `default` value if `input` is `nil`.
-
-  ## Example
-
-    iex> opts = [name: "Glenn"]
-    ...> Keyword.Extra.default(opts, :name, "Unspecified")
-    "Glenn"
-
-    iex> opts = [name: "Glenn"]
-    ...> Keyword.Extra.default(opts, :age, "Unspecified")
-    "Unspecified"
-
-  """
-  @spec default(t, key, any) :: any
-  def default(list, key, default) do
-    case list[key] do
-      nil   -> default
-      value -> value
-    end
-  end
-
-
 end
