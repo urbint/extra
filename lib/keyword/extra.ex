@@ -78,7 +78,7 @@ defmodule Keyword.Extra do
 
   """
   @spec assert_key!(t, key, String.t) :: :ok | no_return
-  def assert_key!(list, key, message \\ "Key is not allowed to be in list") do
+  def assert_key!(list, key, message \\ "Key is required to be in list") do
     unless Keyword.has_key?(list, key) do
       raise ArgumentError, message
     else
