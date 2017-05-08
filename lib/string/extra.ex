@@ -13,7 +13,7 @@ defmodule String.Extra do
   Converts the provided input into titlecase.
 
   It will strip hyphens and underscores and replace them with spaces.
-  
+
   It will also convert ClassCase to Title Case.
 
   ## Examples
@@ -61,9 +61,9 @@ defmodule String.Extra do
 
   @doc """
   Escapes digits within a provided string.
-  
+
   ## Examples
-  
+
       iex> String.Extra.escape_digits("1234")
       ~S/\\1\\2\\3\\4/
 
@@ -80,7 +80,7 @@ defmodule String.Extra do
   Unescapes digits within a provided string.
 
   ## Examples
-  
+
       iex> String.Extra.unescape_digits(~S/\\1\\2\\3\\4/)
       "1234"
 
