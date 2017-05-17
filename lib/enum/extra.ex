@@ -71,6 +71,16 @@ defmodule Enum.Extra do
     end
   end
 
+
+  @doc """
+  Returns a `Map.t` where the elements in `list` are indexed by the value returned by calling
+  `index_fn` on each element. The last writer wins in this implementation.
+
+  """
+  def index_by(list, index_fn),
+    do: Enum.reduce(list, %{}, &Map.put(&2, index_fn.(&1), &1))
+
+
   defp do_map_or_error(keyword, func, acc \\ [])
   defp do_map_or_error([], _func, acc), do: acc |> Enum.reverse()
   defp do_map_or_error([next | rest], func, acc) do
@@ -90,4 +100,5 @@ defmodule Enum.Extra do
 
   defp collectible_for(enum) when is_list(enum), do: []
   defp collectible_for(enum) when is_map(enum), do: %{}
+
 end

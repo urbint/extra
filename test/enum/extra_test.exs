@@ -122,4 +122,32 @@ defmodule Enum.ExtraTest do
       refute_received :called
     end
   end
+
+  describe "index_by/2" do
+    test "indexes element using the indexer function" do
+      cast =
+        [%{name: "Jerry"}, %{name: "George"}, %{name: "Kramer"}]
+
+      assert Enum.Extra.index_by(cast, &Map.get(&1, :name)) ==
+        %{"Jerry"  => %{name: "Jerry"},
+          "George" => %{name: "George"},
+          "Kramer" => %{name: "Kramer"},
+         }
+    end
+
+    test "last writer wins" do
+      cast =
+        [%{fname: "Jerry",  lname: "Seinfeld"},
+         %{fname: "George", lname: "Constanza"},
+         %{fname: "Cosmo",  lname: "Kramer"},
+         %{fname: "Jerry",  lname: "Zeinfeld"},
+        ]
+
+      assert Enum.Extra.index_by(cast, &Map.get(&1, :fname)) ==
+        %{"George" => %{fname: "George", lname: "Constanza"},
+          "Cosmo"  => %{fname: "Cosmo",  lname: "Kramer"},
+          "Jerry"  => %{fname: "Jerry",  lname: "Zeinfeld"},
+         }
+    end
+  end
 end
