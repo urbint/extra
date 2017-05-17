@@ -124,7 +124,7 @@ defmodule Enum.ExtraTest do
   end
 
   describe "index_by/2" do
-    test "indexes element using the indexer function" do
+    test "indexes elements using the indexer function" do
       cast =
         [%{name: "Jerry"}, %{name: "George"}, %{name: "Kramer"}]
 
