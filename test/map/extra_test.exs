@@ -10,10 +10,10 @@ defmodule Map.ExtraTest do
         %{a: 1, b: 2, c: 3}
 
       result =
-        Map.Extra.each_or_error(map, fn {key, val} ->
+        Map.Extra.each_or_error(map, fn {_key, val} ->
           send self(), :called
 
-          {:ok, 2*val}
+          {:ok, 2 * val}
         end)
 
       assert result == {:ok, %{a: 2, b: 4, c: 6}}
@@ -28,7 +28,7 @@ defmodule Map.ExtraTest do
         %{a: 1, b: 2, c: 3}
 
       result =
-        Map.Extra.each_or_error(map, fn {key, val} ->
+        Map.Extra.each_or_error(map, fn {_key, _val} ->
           send self(), :called
           {:error, :failure}
         end)

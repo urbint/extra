@@ -4,7 +4,7 @@ defmodule Enum.ExtraTest do
   use ExUnit.Case, async: true
   doctest Enum.Extra
 
-  describe "each_or_error/2" do
+  describe "Enum.Extra.each_or_error/2" do
     test "returns :ok if the fn is okay" do
       result =
         Enum.Extra.each_or_error([1, 2, 3], fn _ ->

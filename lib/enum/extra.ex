@@ -8,7 +8,7 @@ defmodule Enum.Extra do
   @doc """
   Runs the `fn` for each element in the `enum`, or short circuits if
   `fn` returns an error for any given item, returning the error.
-  
+
   """
   @spec each_or_error(Enum.t, (term -> {:error, reason} | any)) ::
     :ok | {:error, reason} when reason: any
