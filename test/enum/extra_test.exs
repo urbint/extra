@@ -32,4 +32,94 @@ defmodule Enum.ExtraTest do
       refute_received :called
     end
   end
+
+  describe "Enum.Extra.map_or_error/2" do
+    test "works for maps" do
+      map =
+        %{a: 1, b: 2, c: 3}
+
+      result =
+        Enum.Extra.map_or_error(map, fn {_key, val} ->
+          send self(), :called
+
+          {:ok, 2 * val}
+        end)
+
+      assert result == {:ok, %{a: 2, b: 4, c: 6}}
+
+      assert_received :called
+      assert_received :called
+      assert_received :called
+    end
+
+    test "works for a keyword list" do
+      kw =
+        [a: 1, b: 2, c: 3]
+
+      result =
+        Enum.Extra.map_or_error(kw, fn {_key, val} ->
+          send self(), :called
+
+          {:ok, 2 * val}
+        end)
+
+      assert result == {:ok, [a: 2, b: 4, c: 6]}
+
+      assert_received :called
+      assert_received :called
+      assert_received :called
+    end
+
+    test "returns a map if specified" do
+      kw =
+        [a: 1, b: 2, c: 3]
+
+      result =
+        Enum.Extra.map_or_error(kw, fn {_key, val} ->
+          send self(), :called
+
+          {:ok, 2 * val}
+        end, into: %{})
+
+      assert result == {:ok, %{a: 2, b: 4, c: 6}}
+
+      assert_received :called
+      assert_received :called
+      assert_received :called
+    end
+
+    test "works for a list" do
+      list =
+        [1, 2, 3]
+
+      result =
+        Enum.Extra.map_or_error(list, fn val ->
+          send self(), :called
+
+          {:ok, 2 * val}
+        end)
+
+      assert result == {:ok, [2, 4, 6]}
+
+      assert_received :called
+      assert_received :called
+      assert_received :called
+    end
+
+    test "returns an error if it is found" do
+      map =
+        %{a: 1, b: 2, c: 3}
+
+      result =
+        Enum.Extra.map_or_error(map, fn {_key, _val} ->
+          send self(), :called
+          {:error, :failure}
+        end)
+
+      assert result == {:error, :failure}
+
+      assert_received :called
+      refute_received :called
+    end
+  end
 end
