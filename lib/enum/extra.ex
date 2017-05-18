@@ -83,6 +83,7 @@ defmodule Enum.Extra do
     %{"A" => %{id: "A", amt: 10_000}, "B" => %{id: "B", amt: 15_000}}
 
   """
+  @spec index_by([map], (map -> any)) :: %{any => map}
   def index_by(list, index_fn),
     do: Enum.reduce(list, %{}, &Map.put(&2, index_fn.(&1), &1))
 
