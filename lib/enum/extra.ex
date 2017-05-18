@@ -76,6 +76,12 @@ defmodule Enum.Extra do
   Returns a `Map.t` where the elements in `list` are indexed by the value returned by calling
   `index_fn` on each element. The last writer wins in this implementation.
 
+  ## Examples
+
+    iex> txs = [%{id: "A", amt: 10_000}, %{id: "B", amt: 15_000}]
+    ...> txs |> Enum.Extra.index_by(& &1.id)
+    %{"A" => %{id: "A", amt: 10_000}, "B" => %{id: "B", amt: 15_000}}
+
   """
   def index_by(list, index_fn),
     do: Enum.reduce(list, %{}, &Map.put(&2, index_fn.(&1), &1))
