@@ -78,9 +78,9 @@ defmodule Enum.Extra do
 
   ## Examples
 
-    iex> txs = [%{id: "A", amt: 10_000}, %{id: "B", amt: 15_000}]
-    ...> txs |> Enum.Extra.index_by(& &1.id)
-    %{"A" => %{id: "A", amt: 10_000}, "B" => %{id: "B", amt: 15_000}}
+      iex> txs = [%{id: "A", amt: 10_000}, %{id: "B", amt: 15_000}]
+      ...> txs |> Enum.Extra.index_by(& &1.id)
+      %{"A" => %{id: "A", amt: 10_000}, "B" => %{id: "B", amt: 15_000}}
 
   """
   @spec index_by([map], (map -> any)) :: %{any => map}
