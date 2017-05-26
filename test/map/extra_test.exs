@@ -15,14 +15,3 @@ defmodule Map.ExtraTest do
   end
 
 end
-
-
-defmodule Mod do
-  @after_compile __MODULE__
-
-  defmacro __after_compile__(%{module: module}, _bytecode) do
-    quote do
-      def hello, do: "world"
-    end
-  end
-end
