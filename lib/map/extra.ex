@@ -1,0 +1,25 @@
+defmodule Map.Extra do
+  @moduledoc """
+  Extensions to the built-in `Map` module.
+
+  """
+
+  @type t :: map
+
+
+  @doc """
+  Raises an ArgumentError error if `map` does not have the provided `key`.
+
+  Takes an optional argument specifying the error message.
+
+  """
+  @spec assert_key!(t, atom, String.t) :: :ok | no_return
+  def assert_key!(map, key, message \\ "Key is required to be in map") do
+    unless Map.has_key?(map, key) do
+      raise(ArgumentError, message)
+    else
+      :ok
+    end
+  end
+
+end
