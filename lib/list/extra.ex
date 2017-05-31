@@ -16,11 +16,11 @@ defmodule List.Extra do
 
   """
   @spec pop_first(list :: [arg], fun :: (arg -> boolean), acc :: [arg]) ::
-        {:ok, arg, [arg]} | {:no_match, [arg]} when arg: var
+        {:ok, arg, [arg]} | {:error, :no_match, [arg]} when arg: var
   def pop_first(list, fun, acc \\ []) do
     cond do
       list == [] ->
-        {:no_match, acc}
+        {:error, :no_match, acc}
       fun.(hd(list)) ->
         {:ok, hd(list), acc ++ tl(list)}
       true ->
