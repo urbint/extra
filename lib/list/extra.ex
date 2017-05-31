@@ -9,10 +9,16 @@ defmodule List.Extra do
   Returns that item and the list with that item removed. Stops iterating as soon as it
   finds the first match. Note that this does NOT preserve the order of the list.
 
+  On both success and failure, the third element of the returned tuple will be the
+  original list, with the first match (if any) removed to allow for consistent chaining.
+
   ## Examples
 
       iex> List.Extra.pop_first([21, 19, 4, 18, 12], fn(x) -> rem(x, 2) == 0 end)
       {:ok, 4, [19, 21, 18, 12]}
+
+      iex> List.Extra.pop_first([21, 19, 3, 7, 19], fn(x) -> rem(x, 2) == 0 end)
+      {:error, :no_match, [19, 7, 3, 19, 21]}
 
   """
   @spec pop_first(list :: [arg], fun :: (arg -> boolean), acc :: [arg]) ::
