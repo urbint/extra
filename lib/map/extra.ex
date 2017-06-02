@@ -15,10 +15,9 @@ defmodule Map.Extra do
   """
   @spec assert_key!(t, atom, String.t) :: :ok | no_return
   def assert_key!(map, key, message \\ "Key is required to be in map") do
-    unless Map.has_key?(map, key) do
-      raise(ArgumentError, message)
-    else
-      :ok
+    case Map.has_key?(map, key) do
+      true  -> :ok
+      false -> raise(ArgumentError, message)
     end
   end
 
