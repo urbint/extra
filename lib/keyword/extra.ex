@@ -77,14 +77,18 @@ defmodule Keyword.Extra do
   Takes an optional argument specifying the error message.
 
   """
-  @spec assert_key!(t, key, String.t) :: :ok | no_return
-  def assert_key!(list, key, message \\ "Key is required to be in list") do
-    unless Keyword.has_key?(list, key) do
-      raise ArgumentError, message
-    else
-      :ok
+  @spec assert_key!(t, key, String.t | nil) :: :ok | no_return
+  def assert_key!(list, key, message \\ nil) do
+    message =
+      case message do
+        nil -> "#{inspect(key)} is required to be in map."
+        msg when is_binary(msg) -> msg
+      end
+
+    case Keyword.has_key?(list, key) do
+      true  -> :ok
+      false -> raise ArgumentError, message
     end
   end
-
 
 end
