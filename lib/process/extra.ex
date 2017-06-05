@@ -3,7 +3,7 @@ defmodule Process.Extra do
   Extensions to the standard library's `Process` module.
   
   """
-  
+
   @doc """
   Exits the specified `pid_or_atom` with the provided `:reason`.
   
