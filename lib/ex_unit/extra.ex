@@ -4,7 +4,7 @@ defmodule ExUnit.Extra do
 
   """
 
-  @assert_receive_timeout Config.get(:ex_unit, :assert_receive_timeout, 100)
+  @assert_receive_timeout Application.get_env(:ex_unit, :assert_receive_timeout, 100)
 
   @doc """
   Allows for a receive of either pattern to pass, otherwise raises.
