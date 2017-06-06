@@ -82,7 +82,7 @@ defmodule Keyword.Extra do
   ## Options
 
     * `:message`: `binary`, the message to raise with when the value is missing.
-    * `:nil_ok`: `boolean`, Default: `false`. Set to true if a `nil` value
+    * `:allow_nil_value`: `boolean`, Default: `true`. Set to true if a `nil` value
       should not raise.
 
   """
@@ -91,12 +91,12 @@ defmodule Keyword.Extra do
     message =
       Keyword.get(opts, :message, "#{inspect(key)} is required to be in keyword list.")
 
-    nil_ok? =
-      Keyword.get(opts, :nil_ok, false)
+    allow_nil_value? =
+      Keyword.get(opts, :allow_nil_value, true)
 
     case Keyword.fetch(list, key) do
-      {:ok, nil} ->
-        if not nil_ok?, do: raise(ArgumentError, message), else: :ok
+      {:ok, nil} when not allow_nil_value? ->
+        raise(ArgumentError, message)
 
       :error ->
         raise(ArgumentError, message)
