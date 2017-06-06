@@ -4,11 +4,11 @@ defmodule Map.Extra do
 
   """
 
+  @compile {:inline, assert_key!: 3}
+
 
   @doc """
   Raises an ArgumentError error if `map` does not have the provided `key`.
-
-  Takes an optional argument specifying the error message.
 
   ## Options
 
@@ -25,15 +25,14 @@ defmodule Map.Extra do
     nil_ok? =
       Keyword.get(opts, :nil_ok, false)
 
-    case Map.has_key?(map, key) do
-      true  ->
-        if not nil_ok? and is_nil(Map.get(map, key)) do
-          raise(ArgumentError, message)
-        end
+    case Map.fetch(map, key) do
+      {:ok, nil} ->
+        if not nil_ok?, do: raise(ArgumentError, message), else: :ok
 
-        :ok
-      false ->
+      :error ->
         raise(ArgumentError, message)
+
+      _ -> :ok
     end
   end
 

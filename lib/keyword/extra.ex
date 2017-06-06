@@ -9,6 +9,10 @@ defmodule Keyword.Extra do
 
   @type t :: Keyword.t
 
+  @compile {:inline, assert_key!: 3}
+  @compile {:inline, refute_key!: 3}
+  @compile {:inline, default: 3}
+
 
   @doc """
   Takes all entries corresponding to the given keys and returns them in a new
@@ -71,23 +75,33 @@ defmodule Keyword.Extra do
     end
   end
 
+
   @doc """
   Raises an ArgumentError error if `list` does not have the provided `key`.
 
-  Takes an optional argument specifying the error message.
+  ## Options
+
+    * `:message`: `binary`, the message to raise with when the value is missing.
+    * `:nil_ok`: `boolean`, Default: `false`. Set to true if a `nil` value
+      should not raise.
 
   """
-  @spec assert_key!(t, key, String.t | nil) :: :ok | no_return
-  def assert_key!(list, key, message \\ nil) do
+  @spec assert_key!(t, key, keyword) :: :ok | no_return
+  def assert_key!(list, key, opts \\ []) do
     message =
-      case message do
-        nil -> "#{inspect(key)} is required to be in map."
-        msg when is_binary(msg) -> msg
-      end
+      Keyword.get(opts, :message, "#{inspect(key)} is required to be in keyword list.")
 
-    case Keyword.has_key?(list, key) do
-      true  -> :ok
-      false -> raise ArgumentError, message
+    nil_ok? =
+      Keyword.get(opts, :nil_ok, false)
+
+    case Keyword.fetch(list, key) do
+      {:ok, nil} ->
+        if not nil_ok?, do: raise(ArgumentError, message), else: :ok
+
+      :error ->
+        raise(ArgumentError, message)
+
+      _ -> :ok
     end
   end
 

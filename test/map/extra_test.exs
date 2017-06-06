@@ -22,7 +22,5 @@ defmodule Map.ExtraTest do
     test "does not raise when the provided value is nil, but nil is ok" do
       assert Map.Extra.assert_key!(%{first_name: nil}, :first_name, nil_ok: true) == :ok
     end
-
   end
-
 end
