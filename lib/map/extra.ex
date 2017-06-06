@@ -10,18 +10,30 @@ defmodule Map.Extra do
 
   Takes an optional argument specifying the error message.
 
+  ## Options
+
+    * `:message`: `binary`, the message to raise with when the value is missing.
+    * `:nil_ok`: `boolean`, Default: `false`. Set to true if a `nil` value
+      should not raise.
+
   """
-  @spec assert_key!(map, atom, String.t | nil) :: :ok | no_return
-  def assert_key!(map, key, message \\ nil) do
+  @spec assert_key!(map, atom, keyword) :: :ok | no_return
+  def assert_key!(map, key, opts \\ []) do
     message =
-      case message do
-        nil -> "#{inspect(key)} is required to be in map."
-        msg when is_binary(msg) -> msg
-      end
+      Keyword.get(opts, :message, "#{inspect(key)} is required to be in map.")
+
+    nil_ok? =
+      Keyword.get(opts, :nil_ok, false)
 
     case Map.has_key?(map, key) do
-      true  -> :ok
-      false -> raise(ArgumentError, message)
+      true  ->
+        if not nil_ok? and is_nil(Map.get(map, key)) do
+          raise(ArgumentError, message)
+        end
+
+        :ok
+      false ->
+        raise(ArgumentError, message)
     end
   end
 
