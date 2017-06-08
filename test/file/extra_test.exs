@@ -1,7 +1,8 @@
 defmodule File.ExtraTest do
   use ExUnit.Case, async: true
 
-  @test_dir Path.join("/tmp/.urbint_tests/", "file_extra")
+  @base_dir Application.get_env(:extra, :test_dir)
+  @test_dir Path.join(@base_dir, "file_extra")
 
   describe "ensure_dir/1" do
     setup do
