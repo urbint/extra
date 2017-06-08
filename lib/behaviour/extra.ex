@@ -16,16 +16,21 @@ defmodule Behaviour.Extra do
   """
   @spec assert_impl!(behaviour, module) :: :ok | no_return
   def assert_impl!(behaviour, module) do
-    fully_implemented? =
+    callbacks =
       callbacks(behaviour)
-      |> Enum.all?(fn {func, arity} ->
-        function_exported?(module, func, arity)
-      end)
 
-    if fully_implemented? do
-      :ok
-    else
-      raise ArgumentError, "module #{module} does not fully implement behaviour #{behaviour}."
+    missing_functions =
+      callbacks
+      |> Enum.reject(fn {func, arity} -> function_exported?(module, func, arity) end)
+
+    case missing_functions do
+      [] -> :ok
+      missing when is_list(missing) ->
+        formatted =
+          missing
+          |> Enum.map(fn {func, arity} -> "#{func}/#{arity}" end)
+
+        raise ArgumentError, "module #{module} does not fully implement behaviour #{behaviour}. Missing: #{formatted}"
     end
   end
 
