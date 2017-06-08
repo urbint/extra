@@ -11,7 +11,6 @@ defmodule Keyword.Extra do
 
   @compile {:inline, assert_key!: 3}
   @compile {:inline, refute_key!: 3}
-  @compile {:inline, default: 3}
 
 
   @doc """
@@ -102,45 +101,6 @@ defmodule Keyword.Extra do
         raise(ArgumentError, message)
 
       _ -> :ok
-    end
-  end
-
-
-  @doc """
-  Retrieves `key` from `list`. If `list` does not have an entry under `key`, `value` is used. This
-  is useful in scenarios where the following won't work:
-
-  ```elixir
-  opts =
-    [optional: true, on_error: nil]
-
-  on_error =
-    opts[:on_error] || :error
-  ```
-
-  In the above example, it may be reasonable to think that `on_error` will default to `:error` when
-  it the user does not specify a value for it. The issue is that the `Keyword.has_key?/2` function
-  should be called instead to be sure that a value was either supplied to omitted by a user before
-  resorting to the `default`. `Keyword.Extra.default/3` removes the boilerplate involved.
-
-  This fails because `nil || true` returns `true` and `false || 12` returns `12`. This makes it
-  cumbersome to use default values for fields where it is not uncommon for users to specify falsy
-  values.
-
-  ## Examples
-
-    iex> Keyword.Extra.default([on_error: nil], :on_error, :error)
-    nil
-
-    iex> Keyword.Extra.default([name: "Bob", married: false], :married, true)
-    false
-
-  """
-  @spec default(t, key, any) :: any
-  def default(list, key, value) do
-    case Keyword.has_key?(list, key) do
-      true  ->  Keyword.get(list, key)
-      false ->  value
     end
   end
 

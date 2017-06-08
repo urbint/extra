@@ -4,16 +4,6 @@ defmodule Keyword.ExtraTest do
   use ExUnit.Case, async: true
   doctest Keyword.Extra
 
-  describe "default/3" do
-    test "Uses falsy values when they're supplied by the user" do
-      assert Keyword.Extra.default([optional: true, on_error: nil], :on_error, :error) == nil
-    end
-
-    test "Uses default values when the user does not supply a value" do
-      assert Keyword.Extra.default([optional: true], :on_error, :error) == :error
-    end
-  end
-
   describe "assert_key!/3" do
     test "raises when the provided list does not have the specified key" do
       assert_raise ArgumentError, fn ->
