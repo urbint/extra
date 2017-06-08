@@ -136,7 +136,7 @@ defmodule Keyword.Extra do
     false
 
   """
-  @spec default(t, key, any) :: t
+  @spec default(t, key, any) :: any
   def default(list, key, value) do
     case Keyword.has_key?(list, key) do
       true  ->  Keyword.get(list, key)
