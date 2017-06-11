@@ -25,17 +25,42 @@ defmodule Process.ExtraTest do
     end
   end
 
+  describe "nearest/2" do
+    test "returns nothing on isolate processes" do
+      assert Enum.into(Process.Extra.nearest(self()), []) == []
+    end
+
+    test "returns linked processes" do
+      child =
+        spawn_link(fn ->
+          receive do
+            _ -> :ok
+          end
+        end)
+
+      assert Enum.into(Process.Extra.nearest(self()), []) == [child]
+    end
+
+    test "returns monitor processes" do
+      {child, _ref} =
+        spawn_monitor(fn ->
+          receive do
+            _ -> :ok
+          end
+        end)
+
+      assert Enum.into(Process.Extra.nearest(self()), []) == [child]
+    end
+  end
+
+
   defp spawn_and_monitor do
-    pid =
-      spawn(fn ->
-        receive do
-          _ -> :ok
-        end
-      end)
-
-    Process.monitor(pid)
-
-    pid
+    spawn_monitor(fn ->
+      receive do
+        _ -> :ok
+      end
+    end)
+    |> elem(0)
   end
 
   defp assert_process_exit_with_reason(pid, reason) do
