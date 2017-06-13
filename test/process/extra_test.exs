@@ -41,7 +41,7 @@ defmodule Process.ExtraTest do
       assert Enum.into(Process.Extra.nearest(self()), []) == [child]
     end
 
-    test "returns monitor processes" do
+    test "returns monitored processes" do
       {child, _ref} =
         spawn_monitor(fn ->
           receive do

@@ -28,7 +28,7 @@ defmodule Process.Extra do
   @doc """
   Returns a stream of nearest neighbors closest to the `pid` via traversal. 
 
-  What it means to traverse is defined by the options below:
+  Which process relationships to traverse is defined by the options below.
   
   ## Options
   
