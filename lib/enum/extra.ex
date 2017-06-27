@@ -51,7 +51,7 @@ defmodule Enum.Extra do
       structure that was passed in (a map or list).
 
   """
-  @spec map_or_error(Enum.t, (term -> {:ok, term} | {:error, reason}), [{:into, Collectible.t}]) ::
+  @spec map_or_error(Enum.t, (term -> {:ok, term} | {:error, reason}), [{:into, Collectable.t}]) ::
     {:ok, Enum.t} | {:error, reason} when reason: any
   def map_or_error(enum, func, opts \\ []) do
     collectible =
