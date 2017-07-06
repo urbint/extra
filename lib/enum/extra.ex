@@ -57,7 +57,7 @@ defmodule Enum.Extra do
     collectible =
       Keyword.get_lazy(opts, :into, fn -> collectible_for(enum) end)
 
-    Enum.into(enum, [])
+    Enum.to_list(enum)
     |> do_map_or_error(func)
     |> case do
       result when is_list(result) ->
