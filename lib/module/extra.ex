@@ -17,6 +17,7 @@ defmodule Module.Extra do
       module.__info__(:module)
     rescue
       UndefinedFunctionError ->
+        # credo:disable-for-next-line Credo.Check.Warning.RaiseInsideRescue
         raise ArgumentError, "module #{module} does not exist or is not loaded."
     end
 
