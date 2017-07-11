@@ -6,8 +6,8 @@ defmodule Stream.Extra do
 
 
   @doc """
-  Streams tuples in the form of `{:ok, any}` or `{:error, any}`;
-  filters errors and unwrapps `:ok` tuples.
+  Streams tuples in the form of `{:ok, any}` or `{:error, any}`. Rejects `:error` tuples while unwrapping
+  `:ok` tuples.
 
     iex> Stream.Extra.unwrap_oks([{:ok, 1}, {:error, "Test"}]) |> Enum.into([])
     [1]
@@ -16,12 +16,12 @@ defmodule Stream.Extra do
   @spec unwrap_oks(Enumerable.t) :: Enumerable.t
   def unwrap_oks(stream) do
     stream
-    |> Stream.filter(fn
+    |> Stream.filter_map(fn
       {:ok, _} -> true
       {:error, _} -> false
-    end)
-    |> Stream.map(&elem(&1, 1))
+    end, &elem(&1, 1))
   end
+
 
   @doc """
   Filters out the `nil` and `{_, nil}` values from an `Enumerable`.
@@ -43,9 +43,10 @@ defmodule Stream.Extra do
     end)
   end
 
+
   @doc """
   Executes `fun` after `enum` has finished.
-  
+
   """
   @spec on_finish(Enumerable.t, (() -> any)) :: Enumerable.t
   def on_finish(enum, fun) when is_function(fun, 0) do
