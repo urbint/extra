@@ -36,6 +36,8 @@ defmodule Extra.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:cortex, "~> 0.2.0", only: [:dev, :test]},
+    ]
   end
 end
