@@ -24,6 +24,21 @@ defmodule Stream.Extra do
 
 
   @doc """
+  Unwraps a stream of `{:ok, any}` tuples. Raises an `ArgumentError` if it encounters a
+  `{:error, ...}` tuple.
+
+  """
+  @spec unwrap_oks!(Enumerable.t) :: Enumerable.t
+  def unwrap_oks!(stream) do
+    stream
+    |> Stream.filter_map(fn
+      {:ok, _} -> true
+      {:error, _} = tuple -> raise(ArgumentError, "Encountered :error tuple. #{inspect(tuple)}")
+    end, &elem(&1, 1))
+  end
+
+
+  @doc """
   Filters out the `nil` and `{_, nil}` values from an `Enumerable`.
 
     iex> Stream.Extra.filter_nil_values([1, 2, nil]) |> Enum.to_list
