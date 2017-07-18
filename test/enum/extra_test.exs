@@ -39,10 +39,10 @@ defmodule Enum.ExtraTest do
         %{a: 1, b: 2, c: 3}
 
       result =
-        Enum.Extra.map_or_error(map, fn {_key, val} ->
+        Enum.Extra.map_or_error(map, fn {key, val} ->
           send self(), :called
 
-          {:ok, 2 * val}
+          {:ok, {key, 2 * val}}
         end)
 
       assert result == {:ok, %{a: 2, b: 4, c: 6}}
@@ -57,10 +57,10 @@ defmodule Enum.ExtraTest do
         [a: 1, b: 2, c: 3]
 
       result =
-        Enum.Extra.map_or_error(kw, fn {_key, val} ->
+        Enum.Extra.map_or_error(kw, fn {key, val} ->
           send self(), :called
 
-          {:ok, 2 * val}
+          {:ok, {key, 2 * val}}
         end)
 
       assert result == {:ok, [a: 2, b: 4, c: 6]}
@@ -75,10 +75,10 @@ defmodule Enum.ExtraTest do
         [a: 1, b: 2, c: 3]
 
       result =
-        Enum.Extra.map_or_error(kw, fn {_key, val} ->
+        Enum.Extra.map_or_error(kw, fn {key, val} ->
           send self(), :called
 
-          {:ok, 2 * val}
+          {:ok, {key, 2 * val}}
         end, into: %{})
 
       assert result == {:ok, %{a: 2, b: 4, c: 6}}
