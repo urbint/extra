@@ -83,6 +83,35 @@ defmodule Enum.Extra do
 
 
   @doc """
+  Behaves like `Enum.reduce/3` but will short-circuit if
+  `fun` returns an error tuple.
+
+  ## Examples
+
+      iex> Enum.Extra.reduce_or_error(%{a: 1, b: 2}, 0, fn {_key, val}, count -> {:ok, val + count} end)
+      {:ok, 3}
+
+      iex> Enum.Extra.reduce_or_error([1, 2], 0, fn _val, _acc -> {:error, :fail} end)
+      {:error, :fail}
+
+  """
+  @spec reduce_or_error(Enum.t, any, (Enum.element, any -> {:ok, any} | {:error, any}))
+        :: {:ok, any}
+         | {:error, any}
+  def reduce_or_error(enum, acc, fun) do
+    do_reduce_or_error(Enum.to_list(enum), acc, fun)
+  end
+
+  defp do_reduce_or_error([], acc, _), do: {:ok, acc}
+  defp do_reduce_or_error([item | rest], acc, fun) do
+    case fun.(item, acc) do
+      {:ok, acc}        -> do_reduce_or_error(rest, acc, fun)
+      {:error, _} = err -> err
+    end
+  end
+
+
+  @doc """
   Returns a `Map.t` where the elements in `list` are indexed by the value returned by calling
   `index_fn` on each element. The last writer wins in this implementation.
 
