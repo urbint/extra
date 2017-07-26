@@ -16,10 +16,11 @@ defmodule Stream.Extra do
   @spec unwrap_oks(Enumerable.t) :: Enumerable.t
   def unwrap_oks(stream) do
     stream
-    |> Stream.filter_map(fn
+    |> Stream.filter(fn
       {:ok, _} -> true
       {:error, _} -> false
-    end, &elem(&1, 1))
+    end)
+    |> Stream.map(&elem(&1, 1))
   end
 
 
@@ -31,10 +32,11 @@ defmodule Stream.Extra do
   @spec unwrap_oks!(Enumerable.t) :: Enumerable.t
   def unwrap_oks!(stream) do
     stream
-    |> Stream.filter_map(fn
+    |> Stream.filter(fn
       {:ok, _} -> true
       {:error, _} = tuple -> raise(ArgumentError, "Encountered :error tuple. #{inspect(tuple)}")
-    end, &elem(&1, 1))
+    end)
+    |> Stream.map(&elem(&1, 1))
   end
 
 
