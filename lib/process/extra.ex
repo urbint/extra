@@ -1,17 +1,17 @@
 defmodule Process.Extra do
   @moduledoc """
   Extensions to the standard library's `Process` module.
-  
+
   """
 
   @doc """
   Exits the specified `pid_or_atom` with the provided `:reason`.
-  
+
   This function is similar to `Process.kill/2` with the following differences:
 
   It accepts an atom, in which case it will attempt to resolve the module via `Process.whereis/1`,
   and if it is unable to resolve it will function as a no-op.
-  
+
   """
   @spec exit(atom | pid, reason :: term) :: true
   def exit(atom, reason) when is_atom(atom) do
@@ -26,15 +26,15 @@ defmodule Process.Extra do
   end
 
   @doc """
-  Returns a stream of nearest neighbors closest to the `pid` via traversal. 
+  Returns a stream of nearest neighbors closest to the `pid` via traversal.
 
   Which process relationships to traverse is defined by the options below.
-  
+
   ## Options
-  
+
     * `:links`    - `boolean` - whether to include linked processes. Default: `true`.
     * `:monitors` - `boolean` - whether to include monitored processes. Default: `true`.
-  
+
   """
   @spec nearest(pid, keyword) :: Enum.t
   def nearest(pid, opts \\ []) when is_pid(pid) and is_list(opts) do
