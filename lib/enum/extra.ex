@@ -126,4 +126,23 @@ defmodule Enum.Extra do
   def index_by(list, index_fn),
     do: Enum.reduce(list, %{}, &Map.put(&2, index_fn.(&1), &1))
 
+
+  @doc """
+  Applies `mapping_fun` if `predicate` is not `false` or `nil`, otherwise returns `enum`.
+
+  ## Examples
+
+      iex> Enum.Extra.map_if([1, 2, 3], true, &(&1 + 1))
+      [2, 3, 4]
+
+      iex> Enum.Extra.map_if([1, 2, 3], false, &(&1 + 1))
+      [1, 2, 3]
+
+  """
+  @spec map_if(Enum.t, boolean | nil, (any -> any)) :: Enum.t
+  def map_if(enum, predicate, mapping_fun) when is_nil(predicate) or predicate == false and is_function(mapping_fun, 1),
+    do: enum
+
+  def map_if(enum, _predicate = true, mapping_fun) when is_function(mapping_fun, 1),
+    do: Enum.map(enum, mapping_fun)
 end
