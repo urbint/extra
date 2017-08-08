@@ -145,4 +145,36 @@ defmodule Enum.Extra do
 
   def map_if(enum, _predicate = true, mapping_fun) when is_function(mapping_fun, 1),
     do: Enum.map(enum, mapping_fun)
+
+
+  @doc """
+  Returns whether `enum` is unique.
+
+  Note that this implementation will stop enumerating as soon as it finds a non-unique entry (returning `false`)
+  making it more efficient than simply comparing `Enum.uniq(enum)` to the original `enum`.
+
+  ## Examples
+
+      iex> Enum.Extra.unique?([1, 2, 3])
+      true
+
+      iex> Enum.Extra.unique?([1, 1, 2])
+      false
+
+  """
+  @spec unique?(Enum.t) :: boolean
+  def unique?(enum) do
+    unique_reducer = fn (item, seen) ->
+      case MapSet.member?(seen, item) do
+        true  -> {:halt, false}
+        false -> {:cont, MapSet.put(seen, item)}
+      end
+    end
+
+    case Enumerable.reduce(enum, {:cont, MapSet.new()}, unique_reducer) do
+      {:done,   _} -> true
+      {:halted, _} -> false
+    end
+  end
+
 end
