@@ -41,4 +41,32 @@ defmodule Map.ExtraTest do
         %{first_name: "Marc", last_name: "Jacobs"}
     end
   end
+
+  describe "assert_keys!/3" do
+    test "raises when the provided map does not have all of the specified keys" do
+      assert_raise ArgumentError, fn ->
+        Map.Extra.assert_keys!(%{first_name: "Jim"}, [:first_name, :last_name])
+      end
+    end
+
+    test "does not raise when the provided map does has the specified keys" do
+      assert :ok = Map.Extra.assert_keys!(%{name: "Jim Jones", age: 42}, [:name, :age])
+    end
+  end
+
+
+  describe "has_keys!/2" do
+    test "returns true if the map has all of the keys specified" do
+      assert Map.Extra.has_keys?(%{fname: "Jim", lname: "Carey"}, [:fname, :lname])
+    end
+
+    test "returns false if the map has all of the keys specified" do
+      refute Map.Extra.has_keys?(%{fname: "Jim", lname: "Carey"}, [:fname, :lname, :age])
+    end
+
+    test "returns true if keys are an empty list" do
+      assert Map.Extra.has_keys?(%{fname: "Jim", lname: "Carey"}, [])
+    end
+  end
+
 end

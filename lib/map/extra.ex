@@ -59,4 +59,31 @@ defmodule Map.Extra do
     end, %{}, keys)
   end
 
+
+  @doc """
+  Raises an ArgumentError if `map` does not have all of the provided `keys`.
+
+  ## Options
+
+    * `:message`: `binary`, the message to raise with when the value is missing.
+    * `:allow_nil_value`: `boolean`, Default: `true`. Set to true if a `nil` value
+      should not raise.
+
+  """
+  @spec assert_keys!(map, [key :: any], keyword) :: :ok | no_return
+  def assert_keys!(map, keys, opts \\ []) do
+    for key <- keys, do: assert_key!(map, key, opts)
+    :ok
+  end
+
+
+  @doc """
+  Returns `true` if the `map` has all of the `keys`.
+
+  """
+  @spec has_keys?(map, Enum.t) :: boolean
+  def has_keys?(map, keys) do
+    keys |> Enum.all?(&Map.has_key?(map, &1))
+  end
+
 end
