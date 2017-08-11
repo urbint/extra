@@ -36,4 +36,27 @@ defmodule Map.Extra do
     end
   end
 
+
+  @doc """
+  Takes the fields specified by `keys` from `map` if their values are present and non `nil`.
+
+  ## Examples
+
+    iex> Map.Extra.take_non_nil(%{name: nil}, [:name])
+    %{}
+
+    iex> Map.Extra.take_non_nil(%{name: "Jerome"}, [:name])
+    %{name: "Jerome"}
+
+  """
+  @spec take_non_nil(map, list) :: map
+  def take_non_nil(map, keys) do
+    :lists.foldl(fn key, acc ->
+      case Map.get(map, key) do
+        nil -> acc
+        val -> Map.put(acc, key, val)
+      end
+    end, %{}, keys)
+  end
+
 end

@@ -23,4 +23,22 @@ defmodule Map.ExtraTest do
       end
     end
   end
+
+  describe "take_non_nil/2" do
+    test "refuses to take fields that have nil values" do
+      assert Map.Extra.take_non_nil(%{address: nil}, [:address]) ==
+        %{}
+
+      assert Map.Extra.take_non_nil(%{city: "Denver", address: nil}, [:city, :address]) ==
+        %{city: "Denver"}
+    end
+
+    test "takes fields from the input that have non-nil values" do
+      assert Map.Extra.take_non_nil(%{address: "14 bent creek rd"}, [:address]) ==
+        %{address: "14 bent creek rd"}
+
+      assert Map.Extra.take_non_nil(%{first_name: "Marc", last_name: "Jacobs"}, [:first_name, :last_name]) ==
+        %{first_name: "Marc", last_name: "Jacobs"}
+    end
+  end
 end
