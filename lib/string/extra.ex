@@ -12,8 +12,6 @@ defmodule String.Extra do
   @doc """
   Converts the provided input into titlecase.
 
-  It will strip hyphens and underscores and replace them with spaces.
-
   It will also convert ClassCase to Title Case.
 
   ## Examples
@@ -27,10 +25,10 @@ defmodule String.Extra do
   """
   @spec titlecase(String.t) :: String.t
   def titlecase(string) do
-    Regex.replace(~r/_|-/, string, " ")
+    Regex.replace(~r/_/, string, " ")
     |> String.split
     |> Enum.flat_map(&String.split(&1, @classcase_split_regex))
-    |> Stream.map(&String.capitalize/1)
+    |> Stream.map(&capitalize/1)
     |> Enum.join(" ")
   end
 
@@ -53,8 +51,8 @@ defmodule String.Extra do
   def snakecase(string) do
     string
     |> titlecase()
-    |> String.replace(~r/,|\./, "")
-    |> String.replace(~r/ /, "_")
+    |> String.replace(~r/[,.]/, "")
+    |> String.replace(~r/[-\s]/, "_")
     |> String.downcase
   end
 
@@ -118,4 +116,31 @@ defmodule String.Extra do
   def wrap_with(input, wrapper) when is_binary(input) and is_binary(wrapper) do
     wrapper <> input <> wrapper
   end
+
+
+
+  #########################################################################################
+  # Private Helpers
+  #########################################################################################
+
+  # a version of capitalize that treats dashes as word delimiters
+  @spec capitalize(String.t) :: String.t
+  defp capitalize(input) do
+    do_capitalize(input, {false, ""})
+  end
+
+
+  @spec do_capitalize(String.t, {inside_word? :: boolean, String.t}) :: String.t
+  defp do_capitalize("", {_, acc}),
+    do: acc
+
+  defp do_capitalize(<<"-", xs::binary>>, {true, acc}),
+    do: do_capitalize(xs, {false, acc <> "-"})
+
+  defp do_capitalize(<<x::binary-size(1), xs::binary>>, {false, acc}),
+    do: do_capitalize(xs, {true, acc <> String.upcase(x)})
+
+  defp do_capitalize(<<x::binary-size(1), xs::binary>>, {true, acc}),
+    do: do_capitalize(xs, {true, acc <> String.downcase(x)})
+
 end

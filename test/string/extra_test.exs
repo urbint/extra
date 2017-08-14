@@ -15,7 +15,7 @@ defmodule String.ExtraTest do
 
     test "works with hyphenated and underscored string" do
       assert Extra.titlecase("my_weird-word") ==
-        "My Weird Word"
+        "My Weird-Word"
     end
 
     test "works with ClassCase strings" do
@@ -23,6 +23,7 @@ defmodule String.ExtraTest do
         "Class Case"
     end
   end
+
 
   describe "snakecase/1" do
     test "works with a simple string" do
