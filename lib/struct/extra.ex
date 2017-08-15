@@ -41,6 +41,7 @@ defmodule Struct.Extra do
             Map.put(result, k, Map.get(b, k))
 
           _non_default ->
+            # credo:disable-for-next-line Credo.Check.Refactor.Nesting
             case Map.get(b, k) do
               ^default -> Map.put(result, k, a_val)
               b_val    -> Map.put(result, k, b_val)
