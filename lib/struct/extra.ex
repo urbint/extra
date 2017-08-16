@@ -32,24 +32,34 @@ defmodule Struct.Extra do
       a
       |> Map.from_struct
       |> Enum.reduce(%{}, fn {k, a_val}, result ->
-        default =
-          Map.get(defaults, k)
+        {default, b_val} =
+          {Map.get(defaults, k), Map.get(b, k)}
 
-        case default do
-          # overwrite A if it has its default value
-          ^a_val ->
-            Map.put(result, k, Map.get(b, k))
+        case {a_val, b_val} do
+          {^default, _b_val} ->
+            Map.put(result, k, b_val)
 
-          _non_default ->
-            # credo:disable-for-next-line Credo.Check.Refactor.Nesting
-            case Map.get(b, k) do
-              ^default -> Map.put(result, k, a_val)
-              b_val    -> Map.put(result, k, b_val)
-            end
+          {_a_val, ^default} ->
+            Map.put(result, k, a_val)
+
+          _ ->
+            Map.put(result, k, b_val)
         end
       end)
 
     struct(same_struct, result)
+  end
+
+
+  @doc """
+  Convenience function for extracting the top-level keys within a struct.
+
+  This excludes the `__struct__` key.
+
+  """
+  @spec keys(struct) :: [key :: any]
+  def keys(%{__struct__: _struct} = x) do
+    x |> Map.from_struct |> Map.keys
   end
 
 end

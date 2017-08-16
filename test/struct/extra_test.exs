@@ -89,4 +89,23 @@ defmodule Struct.ExtraTest do
     end
   end
 
+
+  describe "keys/1" do
+    setup do
+      result =
+        Struct.Extra.keys(%CreditCard{})
+
+      {:ok, result: result}
+    end
+
+    test "returns all of the keys within a struct", ~M{result} do
+      assert :number in result
+      assert :cvv in result
+    end
+
+    test "does not include the __struct__ key", ~M{result} do
+      refute :__struct__ in result
+    end
+  end
+
 end
