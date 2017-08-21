@@ -104,4 +104,20 @@ defmodule Keyword.Extra do
     end
   end
 
+
+  @doc """
+  Fetches the values for the specified `keys`.
+
+  If any of the `keys` do not exist, a `KeyError` is raised.
+
+  ## Examples
+
+    iex> Keyword.Extra.fetch_keys!([color: "blue"], [:color])
+    ["blue"]
+
+  """
+  @spec fetch_keys!(t, [key]) :: [value]
+  def fetch_keys!(list, keys),
+    do: keys |> Enum.map(&Keyword.fetch!(list, &1))
+
 end
