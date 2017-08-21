@@ -120,4 +120,28 @@ defmodule Keyword.Extra do
   def fetch_keys!(list, keys),
     do: keys |> Enum.map(&Keyword.fetch!(list, &1))
 
+
+  @doc """
+  Gets the values for the specified `keys`.
+
+  Pass default values for keys using the following format: `{key, default}`. If any of the `keys` do
+  not exist, return `nil` or use the default value if supplied.
+
+  ## Examples
+
+    iex> Keyword.Extra.get_keys([ssn: "1234", age: 41], [:age, :ssn])
+    [41, "1234"]
+
+    iex> Keyword.Extra.get_keys([first_name: "Bob"], [first_name: :missing, last_name: :missing])
+    ["Bob", :missing]
+
+  """
+  @spec get_keys(t, [key | {key, default :: any}]) :: [value]
+  def get_keys(list, keys) do
+    keys |> Enum.map(fn
+      {key, default} -> Keyword.get(list, key, default)
+      key -> Keyword.get(list, key)
+    end)
+  end
+
 end

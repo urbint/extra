@@ -32,6 +32,7 @@ defmodule Keyword.ExtraTest do
     setup do
       opts =
         [name: "Bob", age: 65]
+
       {:ok, ~M{opts}}
     end
 
@@ -51,6 +52,28 @@ defmodule Keyword.ExtraTest do
       assert_raise KeyError, fn ->
         Keyword.Extra.fetch_keys!(opts, [:name, :age, :weight])
       end
+    end
+  end
+
+
+  describe "get_keys/2" do
+    setup do
+      opts =
+        [name: "Bob", age: 65]
+
+      {:ok, ~M{opts}}
+    end
+
+    test "gets the values for the list of keys", ~M{opts} do
+      assert Keyword.Extra.get_keys(opts, [:name, :age]) == ["Bob", 65]
+    end
+
+    test "uses nil for non-existent keys", ~M{opts} do
+      assert Keyword.Extra.get_keys(opts, [:name, :age, :weight]) == ["Bob", 65, nil]
+    end
+
+    test "uses the provided defaults when they are provided", ~M{opts} do
+      assert Keyword.Extra.get_keys(opts, [:name, :age, weight: 99.9]) == ["Bob", 65, 99.9]
     end
   end
 end
