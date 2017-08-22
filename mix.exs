@@ -38,6 +38,7 @@ defmodule Extra.Mixfile do
   defp deps do
     [
       {:cortex, "~> 0.2.0", only: [:dev, :test]},
+      {:shorter_maps, "~> 2.1"},
     ]
   end
 end
