@@ -39,6 +39,7 @@ defmodule Extra.Mixfile do
     [
       {:cortex, "~> 0.2.0", only: [:dev, :test]},
       {:shorter_maps, "~> 2.1"},
+      {:propcheck, "~> 0.0", only: [:test]},
     ]
   end
 end

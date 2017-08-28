@@ -177,4 +177,32 @@ defmodule Enum.Extra do
     end
   end
 
+  @doc """
+  Returns the given enum with the keys in `keymap` renamed to their corresponding values in
+  `keymap`.
+  Keys in `keymap` that don't exist in the passed enum will be ignored
+
+  ## Examples
+
+    iex> Enum.Extra.rename_keys([foo: "bar", baz: "qux"], %{foo: :new_foo, a: :b})
+    [new_foo: "bar", baz: "qux"]
+
+    iex> Enum.Extra.rename_keys(%{foo: "bar", baz: "qux"}, %{foo: :new_foo, a: :b})
+    %{new_foo: "bar", baz: "qux"}
+
+    iex> Enum.Extra.rename_keys([foo: "bar"], %{a: :b})
+    [foo: "bar"]
+
+  """
+  @spec rename_keys(Enum.t, keymap :: map) :: keyword
+  def rename_keys(enum, keymap) do
+    enum
+    |> Enum.map(fn {key, val} = element ->
+      case Map.fetch(keymap, key) do
+        {:ok, new_key} -> {new_key, val}
+        :error         -> element
+      end
+    end)
+    |> Enum.into(Monoid.identity(enum))
+  end
 end
