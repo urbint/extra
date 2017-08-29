@@ -1,0 +1,9 @@
+Unknown function 'Elixir.Monoid.Atom':'__impl__'/1
+Unknown function 'Elixir.Monoid.BitString':'__impl__'/1
+Unknown function 'Elixir.Monoid.Float':'__impl__'/1
+Unknown function 'Elixir.Monoid.Function':'__impl__'/1
+Unknown function 'Elixir.Monoid.Integer':'__impl__'/1
+Unknown function 'Elixir.Monoid.PID':'__impl__'/1
+Unknown function 'Elixir.Monoid.Port':'__impl__'/1
+Unknown function 'Elixir.Monoid.Reference':'__impl__'/1
+Unknown function 'Elixir.Monoid.Tuple':'__impl__'/1
