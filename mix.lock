@@ -1,0 +1,5 @@
+%{"cortex": {:hex, :cortex, "0.2.1", "8a13be1bf570cdc5f6f83855f6c5ba8c4a92bc32cf8da042fa1519537ae24315", [], [{:file_system, "~> 0.2", [hex: :file_system, repo: "hexpm", optional: false]}], "hexpm"},
+  "file_system": {:hex, :file_system, "0.2.0", "1b899a8708dd121648b4f4f632022cf8fd989f3d7250621f34eca4831b217ee9", [], [], "hexpm"},
+  "propcheck": {:hex, :propcheck, "0.0.2", "bf226eb62ed91d96a83dcfe308c626bd2ff4effd60260dd1e6e896088da6ec00", [], [{:proper, "~> 1.1.1-beta", [hex: :proper, repo: "hexpm", optional: false]}], "hexpm"},
+  "proper": {:hex, :proper, "1.1.1-beta", "5eef3fa0cae017ecb4bf6fd6a144349a048e999223a4f1e98ce372ff1772edd3", [], [], "hexpm"},
+  "shorter_maps": {:hex, :shorter_maps, "2.2.3", "75f4b7423f7f14be18fd16c22ad7ef8c73e0cd39cdee7bd024b4b4ef41313447", [], [], "hexpm"}}
