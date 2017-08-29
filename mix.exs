@@ -37,9 +37,11 @@ defmodule Extra.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:cortex, "~> 0.2.1", only: [:dev, :test]},
+      {:cortex, "~> 0.2.1", only: [:test, :dev], runtime: !ci_build?()},
       {:shorter_maps, "~> 2.1"},
       {:propcheck, "~> 0.0", only: [:test]},
     ]
   end
+
+  defp ci_build?, do: System.get_env("DRONE_COMMIT") != nil
 end
