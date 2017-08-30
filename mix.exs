@@ -26,6 +26,7 @@ defmodule Extra.Mixfile do
       {:propcheck, "~> 0.0", only: [:test]},
       {:credo, "~> 0.8", only: [:dev, :test]},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
+      {:ex_doc, ">= 0.0.0", only: :dev},
     ]
   end
 
