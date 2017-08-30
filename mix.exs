@@ -12,7 +12,7 @@ defmodule Extra.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      dialyzer: [
-       plt_add_deps: :project,
+       plt_add_deps: :transitive,
        ignore_warnings: "./.dialyzer-ignore-warnings.txt"
      ],
      deps: deps()]
