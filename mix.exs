@@ -4,22 +4,18 @@ defmodule Extra.Mixfile do
   def project do
     [app: :extra,
      version: "0.1.0",
-     build_path: "_build",
-     config_path: "config/config.exs",
-     deps_path: "deps",
-     lockfile: "mix.lock",
-     elixir: "~> 1.4",
+     elixir: "~> 1.5",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      dialyzer: [
        plt_add_deps: :transitive,
        ignore_warnings: "./.dialyzer-ignore-warnings.txt"
      ],
-     deps: deps()]
-  end
-
-  def application do
-    [extra_applications: [:logger]]
+     name: "Extra",
+     deps: deps(),
+     package: package(),
+     description: description()
+    ]
   end
 
   defp deps do
@@ -34,4 +30,32 @@ defmodule Extra.Mixfile do
   end
 
   defp ci_build?, do: System.get_env("DRONE_COMMIT") != nil || System.get_env("CI") != nil
+
+  defp description do
+    """
+    A collection of extra utilities and extensions to the Elixir standard library
+    """
+  end
+
+  defp package do
+    [
+      name: :extra,
+      files: [
+        "lib",
+        "mix.exs",
+        "README.md",
+        "History.md",
+        "LICENSE"
+      ],
+      maintainers: [
+        "Griffin Smith",
+        "Ryan Schmukler",
+        "Russ Matney",
+        "William Carroll",
+        "Justin DeMaris"
+      ],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/urbint/extra"}
+    ]
+  end
 end
