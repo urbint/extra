@@ -15,8 +15,14 @@ jobs:
       - save_cache:
           paths: ['deps']
           key: 'mix-deps-pretest-{{ checksum "mix.exs" }}-{{ checksum "mix.lock" }}'
+      - restore_cache:
+          key: 'mix-build-posttest-{{ checksum "mix.exs" }}-{{ checksum "mix.lock" }}'
 
       - run: mix compile --force --warnings-as-errors
       - run: mix test
       - run: mix credo --strict
       - run: mix dialyzer --halt-exit-status
+
+      - save_cache:
+          paths: ['_build']
+          key: 'mix-build-posttest'
