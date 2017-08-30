@@ -7,15 +7,23 @@
 [license-badge]: https://img.shields.io/hexpm/l/plug.svg
 [license]: https://github.com/urbint/extra/blob/master/LICENSE
 
-**TODO: Add description**
+A collection of extra utilities and extensions to the Elixir standard library.
+
+Extra was extracted from Urbint's internal umbrella application, and should be
+considered unfinished, though we are using it internally and developing against
+it fairly heavily.
 
 ## Installation
 
 ```elixir
 def deps do
-  [{:extra, "~> 0.1.0"}]
+  [{:extra, "~> 0.2.0"}]
 end
 ```
 
-Documentation can be found at [https://hexdocs.pm/extra](https://hexdocs.pm/extra).
+## Documentation
+
+Documentation can be found on [hexdocs][].
+
+[hexdocs]: https://hexdocs.pm/extra
 
