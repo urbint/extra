@@ -4,7 +4,7 @@
 [hex]: https://hex.pm/packages/extra
 [circleci-badge]: https://img.shields.io/circleci/project/github/urbint/extra/master.svg
 [circleci]: https://circleci.com/gh/urbint/extra
-[license-badge]: https://img.shields.io/hexpm/l/plug.svg
+[license-badge]: https://img.shields.io/hexpm/l/extra.svg
 [license]: https://github.com/urbint/extra/blob/master/LICENSE
 
 A collection of extra utilities and extensions to the Elixir standard library.
