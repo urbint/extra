@@ -1,3 +1,5 @@
+# <img src='https://storage.googleapis.com/ub-public/extra.png' height='90'>
+
 # Extra [![Version][hex-version-badge]][hex] [![CircleCI][circleci-badge]][circleci] [![License][license-badge]][license]
 
 [hex-version-badge]: https://img.shields.io/hexpm/v/extra.svg
