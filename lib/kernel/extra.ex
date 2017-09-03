@@ -49,6 +49,12 @@ defmodule Kernel.Extra do
         Macro.generate_arguments(arity, __MODULE__)
 
       quote do
+        @doc """
+        Calls `#{unquote(fname)}`, unwrapping `{:ok, result}` tuples and throwing an `ArgumentError`
+        in the case of a failure.
+
+        See also: `Kernel.Extra.defbang`
+        """
         def unquote(banged)(unquote_splicing(args)) do
           case unquote(fname)(unquote_splicing(args)) do
             {:ok, result} -> result
