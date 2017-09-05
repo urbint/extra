@@ -49,6 +49,8 @@ defmodule Kernel.Extra do
         Macro.generate_arguments(arity, __MODULE__)
 
       quote do
+        @dialyzer {:no_match, [{unquote(banged), unquote(arity)}]}
+
         @doc """
         Calls `#{unquote(fname)}`, unwrapping `{:ok, result}` tuples and throwing an `ArgumentError`
         in the case of a failure.
