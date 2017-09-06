@@ -52,4 +52,32 @@ defmodule Kernel.ExtraTest do
       assert_raise ArgumentError, fn -> TestModule.only_even!(3) end
     end
   end
+
+  describe "defunion" do
+    defmodule TestModule2 do
+      import Kernel.Extra
+
+      defunion :thing, [:foo, :bar, :baz]
+
+      def test_guard(x) when is_thing(x), do: true
+      def test_guard(_), do: false
+
+      def module_attr, do: @things
+    end
+
+    # Can't figure out how to test typespecs here, but maybe that's OK
+
+    test "defines a function returning a list of the given values" do
+      assert TestModule2.things() == [:foo, :bar, :baz]
+    end
+
+    test "defines a guard macro" do
+      assert TestModule2.test_guard(:foo) == true
+      assert TestModule2.test_guard(:qux) == false
+    end
+
+    test "defines a module attribute for the list of given values" do
+      assert TestModule2.module_attr() == [:foo, :bar, :baz]
+    end
+  end
 end

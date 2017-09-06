@@ -22,6 +22,7 @@ defmodule Kernel.Extra do
   def boolean(x),
     do: if x, do: true, else: false
 
+
   @doc """
   Define a "banged" version of the given function/arities in the current module, which unwrap return
   cases of the form `{:ok, result} | {:error, reason} | :error`, returning `result` in the success
@@ -67,4 +68,55 @@ defmodule Kernel.Extra do
       end
     end
   end
+
+
+  @doc """
+  Define a type union, module attribute, public function, and guard macro for a named list of
+  supported values all in one go.
+
+  Concretely, the following:
+
+      defmodule Quark do
+        import Kernel.Extra
+
+        defunion :flavor, [:up, :down, :strange, :charm, :top, :bottom]
+      end
+
+  Transforms into essentially the following:
+
+      defmodule Quark do
+        import Kernel.Extra
+
+        @flavors [:up, :down, :strange, :charm, :top, :bottom]
+
+        @type flavor :: :up | :down | :strange | :charm | :top | :bottom
+
+        def flavors, do: @flavors
+
+        defmacro is_flavor(x) do
+          quote do: unquote(x) in unquote(@flavors)
+        end
+      end
+
+  """
+  @spec defunion(name :: atom, [atom]) :: Macro.t
+  defmacro defunion(name, values) do
+    type_rhs =
+      Enum.reduce(values, fn (x, acc) -> quote do: unquote(x) | unquote(acc) end)
+
+    # XXX use real pluralization, if it's ever necessary
+    plural =
+      :"#{name}s"
+
+    quote do
+      @type unquote(Macro.var(name, nil)) :: unquote(type_rhs)
+
+      Module.put_attribute __MODULE__, unquote(plural), unquote(values)
+
+      def unquote(plural)(), do: unquote(values)
+
+      defmacro unquote(:"is_#{name}")(x), do: {:in, [], [x, unquote(values)]}
+    end
+  end
+
 end
