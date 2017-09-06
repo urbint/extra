@@ -59,9 +59,6 @@ defmodule Kernel.ExtraTest do
 
       defunion :thing, [:foo, :bar, :baz]
 
-      def test_guard(x) when is_thing(x), do: true
-      def test_guard(_), do: false
-
       def module_attr, do: @things
     end
 
@@ -69,11 +66,6 @@ defmodule Kernel.ExtraTest do
 
     test "defines a function returning a list of the given values" do
       assert TestModule2.__union_things__() == [:foo, :bar, :baz]
-    end
-
-    test "defines a guard macro" do
-      assert TestModule2.test_guard(:foo) == true
-      assert TestModule2.test_guard(:qux) == false
     end
 
     test "defines a module attribute for the list of given values" do

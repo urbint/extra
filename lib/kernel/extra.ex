@@ -71,8 +71,8 @@ defmodule Kernel.Extra do
 
 
   @doc """
-  Define a type union, module attribute, public function, and guard macro for a named list of
-  supported values all in one go.
+  Define a type union, module attribute, and public function for a named list of supported values
+  all in one go.
 
   Concretely, the following:
 
@@ -92,10 +92,6 @@ defmodule Kernel.Extra do
         @type flavor :: :up | :down | :strange | :charm | :top | :bottom
 
         def __union_flavors__, do: @flavors
-
-        defmacro is_flavor(x) do
-          quote do: unquote(x) in unquote(@flavors)
-        end
       end
 
   """
@@ -119,12 +115,6 @@ defmodule Kernel.Extra do
       """
       @spec unquote(:"__union_#{plural}__")() :: list()
       def unquote(:"__union_#{plural}__")(), do: unquote(values)
-
-      @doc """
-      Returns true if the given value is a valid #{unquote(name)}. Can be used in guards.
-
-      """
-      defmacro unquote(:"is_#{name}")(x), do: {:in, [], [x, unquote(values)]}
     end
   end
 
