@@ -18,6 +18,7 @@ defmodule System.Extra.CmdStreamer do
     receiver: pid,
     running: boolean,
     pending_demand: non_neg_integer,
+    buffer: binary,
   }
 
   defstruct [
@@ -26,6 +27,7 @@ defmodule System.Extra.CmdStreamer do
     receiver: nil,
     running: true,
     pending_demand: 0,
+    buffer: "",
   ]
 
 
@@ -37,18 +39,24 @@ defmodule System.Extra.CmdStreamer do
   @doc """
   Starts the `CmdStreamer` enumerable by wrapping `cmd` and forwarding `args` to it.
 
+  ## Options
+
+    * `line_length`: `pos_integer`. Maximum size of message sent between the command `Port` and the
+      `CmdStreamer`. Defaults to `20_000`.
+
   """
-  @spec start(binary, [binary]) :: pid
-  def start(cmd, args) do
+  @spec start(binary, [binary], keyword) :: pid
+  def start(cmd, args, opts) do
     receiver =
       self()
 
-    cmd_string =
-      [cmd | args] |> Enum.join(" ")
+    line_length =
+      Keyword.get(opts, :line_length, 20_000)
 
     spawn(fn ->
       port =
-        Port.open({:spawn, cmd_string}, [{:line, 20_000}, :binary, :exit_status])
+        Port.open({:spawn_executable, System.find_executable(cmd)},
+          [{:line, line_length}, {:args, args}, :binary, :exit_status])
 
       state =
         %CmdStreamer{port: port, receiver: receiver}
@@ -77,8 +85,12 @@ defmodule System.Extra.CmdStreamer do
   #########################################################
 
   @spec loop(t) :: no_return
-  defp loop(%CmdStreamer{receiver: receiver, port: port} = state) do
+  defp loop(%CmdStreamer{receiver: receiver, port: port, buffer: buffer} = state) do
     receive do
+      {^port, {:data, {:noeol, line}}} ->
+        %{state | buffer: buffer <> line}
+        |> loop()
+
       {^port, {:data, {:eol, line}}} ->
         state
         |> send_or_buffer_line(line)
@@ -88,32 +100,33 @@ defmodule System.Extra.CmdStreamer do
         state =
           %{state | running: false}
 
-        if state.pending_demand > 0 do
-          send_receiver(state, :done)
-        else
-          state
-        end
+        send_receiver(state, :done)
         |> loop()
 
       {^port, {:exit_status, code}} ->
+        state =
+          %{state | running: false}
+
         send_receiver(state, {:error, code})
 
       {^receiver, :next_line} ->
         state
-        |> send_next_line_or_track_demand
+        |> send_next_line_or_track_demand()
         |> loop()
     end
   end
 
 
   @spec send_or_buffer_line(t, binary) :: t
-  defp send_or_buffer_line(%CmdStreamer{} = state, line) do
-    if state.pending_demand > 0 do
-      %{state | pending_demand: state.pending_demand - 1}
-      |> send_receiver({:line, line})
-    else
-      %{state| queue: :queue.in(line, state.queue)}
-    end
+  defp send_or_buffer_line(
+    %CmdStreamer{pending_demand: 0, queue: queue, buffer: buffer} = state, line) do
+    %{state| queue: :queue.in(buffer <> line, queue), buffer: ""}
+  end
+
+  defp send_or_buffer_line(
+    %CmdStreamer{pending_demand: pending_demand, buffer: buffer} = state, line) do
+    %{state | pending_demand: pending_demand - 1, buffer: ""}
+    |> send_receiver({:line, buffer <> line})
   end
 
 

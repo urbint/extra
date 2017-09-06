@@ -20,7 +20,6 @@ defmodule System.Extra do
   #########################################################
   # Public API
   #########################################################
-
   @doc """
   Asserts that the provided path is valid and an executable binary.
 
@@ -30,7 +29,7 @@ defmodule System.Extra do
     :ok
 
   """
-  @spec assert_executable!(Stream.t) :: :ok | no_return
+  @spec assert_executable!(binary) :: :ok | no_return
   def assert_executable!(path) do
     case System.find_executable(path) do
       result when is_binary(result) ->
@@ -45,18 +44,25 @@ defmodule System.Extra do
   @doc """
   Streams output from a command by line.
 
-  Will raise an error if the command exits with a non-zero exit code.
+  Will raise an error under two conditions:
 
-  Will also error on lines over 20,000 characters long. Don't be that guy.
+    * the command exits with a non-zero exit code
 
-      iex> System.Extra.stream_cmd("echo", ["hello"]) |> Enum.take(1)
-      ["hello"]
+  ## Options
+
+    * `line_length`: Forwarded to `CmdStreamer.start/3`. See docs for more information.
+
+
+  ## Examples
+
+    iex> System.Extra.stream_cmd("echo", ["hello"]) |> Enum.take(1)
+    ["hello"]
 
   """
-  @spec stream_cmd(binary, [binary]) :: Enumerable.t
-  def stream_cmd(command, args \\ []) do
+  @spec stream_cmd(binary, [binary]) :: Enum.t
+  def stream_cmd(command, args \\ [], opts \\ []) do
     Stream.resource(
-      fn -> CmdStreamer.start(command, args) end,
+      fn -> CmdStreamer.start(command, args, opts) end,
       &do_stream_cmd/1,
       &do_stream_exit/1
     )
@@ -68,7 +74,7 @@ defmodule System.Extra do
   # Private Helpers
   #########################################################
 
-  @spec do_stream_cmd(pid) :: (acc -> {[element], acc} | {:halt, acc})
+  @spec do_stream_cmd(pid) :: {[element], acc} | {:halt, acc} | no_return
   defp do_stream_cmd(pid) do
     case CmdStreamer.get_line(pid) do
       {:line, line}  -> {[line], pid}
@@ -78,7 +84,7 @@ defmodule System.Extra do
   end
 
 
-  @spec do_stream_exit(pid) :: (acc -> term)
+  @spec do_stream_exit(pid) :: true
   defp do_stream_exit(pid) do
     Process.exit(pid, :kill)
   end
