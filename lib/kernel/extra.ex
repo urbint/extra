@@ -113,8 +113,17 @@ defmodule Kernel.Extra do
 
       Module.put_attribute __MODULE__, unquote(plural), unquote(values)
 
+      @doc """
+      Returns a list of all valid #{unquote(plural)}.
+
+      """
+      @spec unquote(:"__union_#{plural}__")() :: list()
       def unquote(:"__union_#{plural}__")(), do: unquote(values)
 
+      @doc """
+      Returns true if the given value is a valid #{unquote(name)}. Can be used in guards.
+
+      """
       defmacro unquote(:"is_#{name}")(x), do: {:in, [], [x, unquote(values)]}
     end
   end
