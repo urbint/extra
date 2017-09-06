@@ -3,10 +3,13 @@
   "credo": {:hex, :credo, "0.8.6", "335f723772d35da499b5ebfdaf6b426bfb73590b6fcbc8908d476b75f8cbca3f", [:mix], [{:bunt, "~> 0.2.0", [hex: :bunt, repo: "hexpm", optional: false]}], "hexpm"},
   "dialyxir": {:hex, :dialyxir, "0.5.1", "b331b091720fd93e878137add264bac4f644e1ddae07a70bf7062c7862c4b952", [:mix], [], "hexpm"},
   "earmark": {:hex, :earmark, "1.2.3", "206eb2e2ac1a794aa5256f3982de7a76bf4579ff91cb28d0e17ea2c9491e46a4", [], [], "hexpm"},
+  "ex_dash": {:hex, :ex_dash, "0.1.5", "cec8f0820f88539eeba71e88e12f64db1588c443e92216d881512097d88ef0ad", [], [{:ex_doc, "~> 0.15", [hex: :ex_doc, repo: "hexpm", optional: false]}, {:floki, "~> 0.14.0", [hex: :floki, repo: "hexpm", optional: false]}], "hexpm"},
   "ex_doc": {:hex, :ex_doc, "0.16.3", "cd2a4cfe5d26e37502d3ec776702c72efa1adfa24ed9ce723bb565f4c30bd31a", [], [{:earmark, "~> 1.1", [hex: :earmark, repo: "hexpm", optional: false]}], "hexpm"},
   "file_system": {:hex, :file_system, "0.2.0", "1b899a8708dd121648b4f4f632022cf8fd989f3d7250621f34eca4831b217ee9", [:mix], [], "hexpm"},
+  "floki": {:hex, :floki, "0.14.0", "91a6be57349e10a63cf52d7890479a19012cef9185fa93c305d4fe42e6a50dee", [], [{:mochiweb, "~> 2.15", [hex: :mochiweb, repo: "hexpm", optional: false]}], "hexpm"},
   "flow": {:hex, :flow, "0.12.0", "32c5a5f3ff6693e004b6c17a8c64dce2f8cdaf9564912d79427176013a586ab6", [:mix], [{:gen_stage, "~> 0.12.0", [hex: :gen_stage, repo: "hexpm", optional: false]}], "hexpm"},
   "gen_stage": {:hex, :gen_stage, "0.12.2", "e0e347cbb1ceb5f4e68a526aec4d64b54ad721f0a8b30aa9d28e0ad749419cbb", [:mix], [], "hexpm"},
+  "mochiweb": {:hex, :mochiweb, "2.15.0", "e1daac474df07651e5d17cc1e642c4069c7850dc4508d3db7263a0651330aacc", [], [], "hexpm"},
   "propcheck": {:hex, :propcheck, "0.0.2", "bf226eb62ed91d96a83dcfe308c626bd2ff4effd60260dd1e6e896088da6ec00", [:mix], [{:proper, "~> 1.1.1-beta", [hex: :proper, repo: "hexpm", optional: false]}], "hexpm"},
   "proper": {:hex, :proper, "1.1.1-beta", "5eef3fa0cae017ecb4bf6fd6a144349a048e999223a4f1e98ce372ff1772edd3", [:rebar3], [], "hexpm"},
   "shorter_maps": {:hex, :shorter_maps, "2.2.3", "75f4b7423f7f14be18fd16c22ad7ef8c73e0cd39cdee7bd024b4b4ef41313447", [:mix], [], "hexpm"}}
