@@ -91,7 +91,7 @@ defmodule Kernel.Extra do
 
         @type flavor :: :up | :down | :strange | :charm | :top | :bottom
 
-        def flavors, do: @flavors
+        def __union_flavors__, do: @flavors
 
         defmacro is_flavor(x) do
           quote do: unquote(x) in unquote(@flavors)
@@ -113,7 +113,7 @@ defmodule Kernel.Extra do
 
       Module.put_attribute __MODULE__, unquote(plural), unquote(values)
 
-      def unquote(plural)(), do: unquote(values)
+      def unquote(:"__union_#{plural}__")(), do: unquote(values)
 
       defmacro unquote(:"is_#{name}")(x), do: {:in, [], [x, unquote(values)]}
     end

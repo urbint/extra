@@ -68,7 +68,7 @@ defmodule Kernel.ExtraTest do
     # Can't figure out how to test typespecs here, but maybe that's OK
 
     test "defines a function returning a list of the given values" do
-      assert TestModule2.things() == [:foo, :bar, :baz]
+      assert TestModule2.__union_things__() == [:foo, :bar, :baz]
     end
 
     test "defines a guard macro" do
