@@ -2,7 +2,19 @@ defmodule System.ExtraTest do
   use ExUnit.Case, async: true
   doctest System.Extra
 
+
   describe "assert_executable!/1" do
+    test "resolves binaries that are available on the user's PATH" do
+      assert :ok = System.Extra.assert_executable!("iex")
+    end
+
+    test "accepts direct paths to binaries as well" do
+      full_path =
+        System.find_executable("iex")
+
+      assert :ok = System.Extra.assert_executable!(full_path)
+    end
+
     test "does not raise when passed existant binaries" do
       assert :ok = System.Extra.assert_executable!("/bin/cat")
     end

@@ -24,8 +24,10 @@ defmodule System.Extra do
   @doc """
   Asserts that the provided path is valid and an executable binary.
 
-  iex> System.Extra.assert_executable!("/usr/local/bin/mix")
-  :ok
+  ## Examples
+
+    iex> System.Extra.assert_executable!("mix")
+    :ok
 
   """
   @spec assert_executable!(Stream.t) :: :ok | no_return
