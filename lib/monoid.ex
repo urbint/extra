@@ -5,21 +5,21 @@ defprotocol Monoid do
 
   Given the `mcat` operator as `⋅`, monoids must satisfy:
 
-    ∀ a. identity ⋅ a = a ⋅ identity = a
-    ∀ a b c. a ⋅ (b ⋅ c) = (a ⋅ b) ⋅ c
+    - ∀ a. identity ⋅ a = a ⋅ identity = a
+    - ∀ a b c. a ⋅ (b ⋅ c) = (a ⋅ b) ⋅ c
 
   ## Built-in instances
 
   Built in instances are defined for `List`, `Map`, and `Stream`. For example:
 
-    iex> Monoid.mplus([1, 2], [3, 4])
-    [1, 2, 3, 4]
+      iex> Monoid.mplus([1, 2], [3, 4])
+      [1, 2, 3, 4]
 
-    iex> Monoid.identity([1, 2, 3])
-    []
+      iex> Monoid.identity([1, 2, 3])
+      []
 
-    iex> Monoid.identity(%{foo: :bar})
-    %{}
+      iex> Monoid.identity(%{foo: :bar})
+      %{}
   """
 
   @doc """

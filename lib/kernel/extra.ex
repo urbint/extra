@@ -9,13 +9,13 @@ defmodule Kernel.Extra do
 
   ## Examples
 
-    iex> import Kernel.Extra
-    ...> 12 |> boolean()
-    true
+      iex> import Kernel.Extra
+      ...> 12 |> boolean()
+      true
 
-    iex> import Kernel.Extra
-    ...> nil |> boolean()
-    false
+      iex> import Kernel.Extra
+      ...> nil |> boolean()
+      false
 
   """
   @spec boolean(any) :: boolean

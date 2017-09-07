@@ -24,8 +24,8 @@ defmodule File.Extra do
 
   ## Example
 
-  iex> File.Extra.assert_exists!("/etc/hosts")
-  :ok
+      iex> File.Extra.assert_exists!("/etc/hosts")
+      :ok
 
   """
   @spec assert_exists!(Path.t) :: :ok | no_return
