@@ -16,4 +16,24 @@ defmodule File.Extra do
       false -> File.mkdir_p!(path)
     end
   end
+
+
+  @doc """
+  Asserts that a provided `path` exists on a filesystem. Raises if it does not
+  exist.
+
+  ## Example
+
+  iex> File.Extra.assert_exists!("/etc/hosts")
+  :ok
+
+  """
+  @spec assert_exists!(Path.t) :: :ok | no_return
+  def assert_exists!(path) do
+    if File.exists?(path) do
+      :ok
+    else
+      raise(File.Error, reason: :enoent, action: "find file", path: path)
+    end
+  end
 end

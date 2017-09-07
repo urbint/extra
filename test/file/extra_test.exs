@@ -4,6 +4,26 @@ defmodule File.ExtraTest do
   @base_dir Application.get_env(:extra, :test_dir)
   @test_dir Path.join(@base_dir, "file_extra")
 
+
+  describe "assert_exists!/1" do
+    test "raises on a non-existant file" do
+      path = "/tmp/shouldnt_exist"
+      f = fn -> File.Extra.assert_exists!(path) end
+
+      assert_raise(File.Error, "could not find file \"#{path}\": no such file or directory", f)
+    end
+
+    test "does not raise on a non-existant file" do
+      file =
+        "/tmp/file.txt"
+
+      :ok = File.touch!(file)
+
+      assert :ok = File.Extra.assert_exists!(file)
+    end
+  end
+
+
   describe "ensure_dir/1" do
     setup do
       path =
