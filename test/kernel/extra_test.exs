@@ -33,7 +33,10 @@ defmodule Kernel.ExtraTest do
       def only_odd(x) when Integer.is_odd(x), do: {:ok, x}
       def only_odd(_), do: :error
 
-      defbang only_even: 1, only_odd: 1
+      def only_positive(x) when x >= 0, do: {:ok, x}
+      def only_positive(_), do: {:error, :negative}
+
+      defbang only_even: 1, only_odd: 1, only_positive: 1
     end
 
     test "returns the value when the wrapped function succeeds" do
@@ -50,6 +53,11 @@ defmodule Kernel.ExtraTest do
 
       assert TestModule.only_odd(2) == :error
       assert_raise ArgumentError, fn -> TestModule.only_even!(3) end
+    end
+
+    test "allows the wrapped function to return atoms for errors" do
+      assert {:error, :negative} = TestModule.only_positive(-1)
+      assert_raise ArgumentError, "negative", fn -> TestModule.only_positive!(-1) end
     end
   end
 

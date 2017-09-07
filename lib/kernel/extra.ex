@@ -31,14 +31,14 @@ defmodule Kernel.Extra do
   Functions are specified as keywords mapping function name to arity, just like the arguments to
   `defoverridable` or `import`'s `:from` option
 
-  import
+      defmodule MyModule do
+        import Kernel.Extra
 
-    defmodule MyModule do
-      def only_even(x) when Integer.is_even(x), do: {:ok, x}
-      def only_even(_), do: {:error, "not even"}
+        def only_even(x) when Integer.is_even(x), do: {:ok, x}
+        def only_even(_), do: {:error, "not even"}
 
-      defbang only_even: 1
-    end
+        defbang only_even: 1
+      end
   """
   @spec defbang([{atom, pos_integer}]) :: Macro.t
   defmacro defbang(functions) do
@@ -61,7 +61,7 @@ defmodule Kernel.Extra do
         def unquote(banged)(unquote_splicing(args)) do
           case unquote(fname)(unquote_splicing(args)) do
             {:ok, result} -> result
-            {:error, msg} -> raise ArgumentError, msg
+            {:error, msg} -> raise ArgumentError, to_string(msg)
             :error        -> raise ArgumentError
           end
         end
