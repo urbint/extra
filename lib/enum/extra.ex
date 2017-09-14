@@ -206,6 +206,7 @@ defmodule Enum.Extra do
     |> Enum.into(Monoid.identity(enum))
   end
 
+
   @doc """
   Maps the given function over the keys of the given keyed enum (a keyword or a map)
 
@@ -222,6 +223,26 @@ defmodule Enum.Extra do
   def map_keys(enum, f) do
     enum
     |> Stream.map(fn {key, val} -> {f.(key), val} end)
+    |> Enum.into(Monoid.identity(enum))
+  end
+
+
+  @doc """
+  Maps the given function over the values of the given keyed enum (a keyword or a map)
+
+  ## Examples
+
+      iex> %{foo: "bar", baz: "qux"} |> Enum.Extra.map_values(&String.upcase/1)
+      %{foo: "BAR", baz: "QUX"}
+
+      iex> [foo: "bar", baz: "qux"] |> Enum.Extra.map_values(&String.upcase/1)
+      [foo: "BAR", baz: "QUX"]
+
+  """
+  @spec map_values(Enum.t, (any -> any)) :: Enum.t
+  def map_values(enum, f) do
+    enum
+    |> Stream.map(fn {key, val} -> {key, f.(val)} end)
     |> Enum.into(Monoid.identity(enum))
   end
 end
