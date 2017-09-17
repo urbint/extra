@@ -5,6 +5,43 @@ defmodule Keyword.ExtraTest do
   use ExUnit.Case, async: true
   doctest Keyword.Extra
 
+
+  describe "assert_any!/3" do
+    setup do
+      keyword =
+        [a: :present, b: :present, c: :present]
+
+      {:ok, ~M{keyword}}
+    end
+
+    test "does not raise when the list has at least one of the keys", ~M{keyword} do
+      assert :ok = Keyword.Extra.assert_any!(keyword, [:a, :z])
+      assert :ok = Keyword.Extra.assert_any!(keyword, [:b, :z])
+      assert :ok = Keyword.Extra.assert_any!(keyword, [:c, :z])
+      assert :ok = Keyword.Extra.assert_any!(keyword, [:a, :b, :c])
+    end
+
+    test "raises when the list does not have any of the keys", ~M{keyword} do
+      assert_raise ArgumentError, fn ->
+        Keyword.Extra.assert_any!(keyword, [:d, :e, :f])
+      end
+    end
+
+    test "accepts an enumerable as the collection of keys", ~M{keyword} do
+      keys =
+        MapSet.new([:a, :b, :c])
+
+      assert :ok = Keyword.Extra.assert_any!(keyword, keys)
+    end
+
+    test "accepts a custom message to use when raising errors", ~M{keyword} do
+      assert_raise ArgumentError, "Custom message.", fn ->
+        Keyword.Extra.assert_any!(keyword, [:d, :e, :f], message: "Custom message.")
+      end
+    end
+  end
+
+
   describe "assert_key!/3" do
     test "raises when the provided list does not have the specified key" do
       assert_raise ArgumentError, fn ->

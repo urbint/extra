@@ -106,6 +106,29 @@ defmodule Keyword.Extra do
 
 
   @doc """
+  Raises an ArgumentError if `list` does not have any of the provided `keys`.
+
+  ## Options
+
+    * `:message`: `binary`, the message to raise if not any of the keys are provided.
+
+  """
+  @spec assert_any!(t, Enum.t, keyword) :: :ok | no_return
+  def assert_any!(list, keys, opts \\ []) do
+    message =
+      Keyword.get(opts, :message, "At least one of the supplied keys, #{inspect(keys)}, is required to be in keyword list.")
+
+    result =
+      keys |> Enum.any?(&Keyword.has_key?(list, &1))
+
+    case result do
+      false -> raise(ArgumentError, message: message)
+      true  -> :ok
+    end
+  end
+
+
+  @doc """
   Fetches the values for the specified `keys`.
 
   If any of the `keys` do not exist, a `KeyError` is raised.
