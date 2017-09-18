@@ -4,6 +4,28 @@ defmodule Kernel.Extra do
 
   """
 
+
+  @doc """
+  Creates a new function where the output of the last function in `functions` is passed into the
+  second-to-last function in `functions` and so on until the list is exhausted.
+
+  ## Examples
+
+    iex> import Kernel.Extra
+    ...> compose([fn x -> x <> ", world." end, &String.downcase/1]).("HELLO")
+    "hello, world."
+
+  """
+  def compose(functions) when is_list(functions) do
+    reversed =
+      :lists.reverse(functions)
+
+    fn input ->
+      reversed |> Enum.reduce(input, & &1.(&2))
+    end
+  end
+
+
   @doc """
   Coerces values into booleans.
 

@@ -87,6 +87,17 @@ defmodule Map.Extra do
   end
 
 
+  @doc """
+  Fetches all of the values for the specified `keys` from `map`.
+
+  Raises a `KeyError` if any of the specified keys does not exist.
+
+  ## Examples
+
+    iex> Map.Extra.fetch_all!(%{red: 255, green: 200, blue: 150}, [:red, :blue])
+    [255, 150]
+
+  """
   @spec fetch_all!(map, [key :: any]) :: [any] | no_return
   def fetch_all!(map, keys) do
     keys |> Enum.map(&Map.fetch!(map, &1))
