@@ -1,6 +1,8 @@
 defmodule Map.ExtraTest do
   use ExUnit.Case, async: true
 
+  import ShorterMaps
+
 
   describe "assert_key!/3" do
     test "raises when the provided map does not have the specified key" do
@@ -69,4 +71,23 @@ defmodule Map.ExtraTest do
     end
   end
 
+
+  describe "fetch_all!/2" do
+    setup do
+      map =
+        %{fname: "John", lname: "Cleese"}
+
+      {:ok, ~M{map}}
+    end
+
+    test "returns the values for all of the requested keys", ~M{map} do
+      assert Map.Extra.fetch_all!(map, [:fname, :lname]) == ["John", "Cleese"]
+    end
+
+    test "raises a KeyError when a requested key does not exist", ~M{map} do
+      assert_raise KeyError, fn ->
+        Map.Extra.fetch_all!(map, [:fname, :lname, :age])
+      end
+    end
+  end
 end

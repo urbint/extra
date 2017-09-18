@@ -86,4 +86,9 @@ defmodule Map.Extra do
     keys |> Enum.all?(&Map.has_key?(map, &1))
   end
 
+
+  @spec fetch_all!(map, [key :: any]) :: [any] | no_return
+  def fetch_all!(map, keys) do
+    keys |> Enum.map(&Map.fetch!(map, &1))
+  end
 end
