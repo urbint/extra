@@ -135,12 +135,12 @@ defmodule Keyword.Extra do
 
   ## Examples
 
-    iex> Keyword.Extra.fetch_keys!([color: "blue"], [:color])
+    iex> Keyword.Extra.fetch_all!([color: "blue"], [:color])
     ["blue"]
 
   """
-  @spec fetch_keys!(t, [key]) :: [value]
-  def fetch_keys!(list, keys),
+  @spec fetch_all!(t, [key]) :: [value]
+  def fetch_all!(list, keys),
     do: keys |> Enum.map(&Keyword.fetch!(list, &1))
 
 
@@ -152,15 +152,15 @@ defmodule Keyword.Extra do
 
   ## Examples
 
-    iex> Keyword.Extra.get_keys([ssn: "1234", age: 41], [:age, :ssn])
+    iex> Keyword.Extra.get_all([ssn: "1234", age: 41], [:age, :ssn])
     [41, "1234"]
 
-    iex> Keyword.Extra.get_keys([first_name: "Bob"], [first_name: :missing, last_name: :missing])
+    iex> Keyword.Extra.get_all([first_name: "Bob"], [first_name: :missing, last_name: :missing])
     ["Bob", :missing]
 
   """
-  @spec get_keys(t, [key | {key, default :: any}]) :: [value]
-  def get_keys(list, keys) do
+  @spec get_all(t, [key | {key, default :: any}]) :: [value]
+  def get_all(list, keys) do
     keys |> Enum.map(fn
       {key, default} -> Keyword.get(list, key, default)
       key -> Keyword.get(list, key)

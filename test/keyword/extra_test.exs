@@ -65,7 +65,7 @@ defmodule Keyword.ExtraTest do
   end
 
 
-  describe "fetch_keys!/2" do
+  describe "fetch_all!/2" do
     setup do
       opts =
         [name: "Bob", age: 65]
@@ -74,26 +74,26 @@ defmodule Keyword.ExtraTest do
     end
 
     test "gets the values for the list of keys", ~M{opts} do
-      assert Keyword.Extra.fetch_keys!(opts, [:name, :age]) == ["Bob", 65]
+      assert Keyword.Extra.fetch_all!(opts, [:name, :age]) == ["Bob", 65]
     end
 
     test "returns the values in the same order in which they are requested", ~M{opts} do
-      assert Keyword.Extra.fetch_keys!(opts, [:age, :name]) == [65, "Bob"]
+      assert Keyword.Extra.fetch_all!(opts, [:age, :name]) == [65, "Bob"]
     end
 
     test "fails when a requested key is not present", ~M{opts} do
       assert_raise KeyError, fn ->
-        Keyword.Extra.fetch_keys!(opts, [:weight])
+        Keyword.Extra.fetch_all!(opts, [:weight])
       end
 
       assert_raise KeyError, fn ->
-        Keyword.Extra.fetch_keys!(opts, [:name, :age, :weight])
+        Keyword.Extra.fetch_all!(opts, [:name, :age, :weight])
       end
     end
   end
 
 
-  describe "get_keys/2" do
+  describe "get_all/2" do
     setup do
       opts =
         [name: "Bob", age: 65]
@@ -102,15 +102,15 @@ defmodule Keyword.ExtraTest do
     end
 
     test "gets the values for the list of keys", ~M{opts} do
-      assert Keyword.Extra.get_keys(opts, [:name, :age]) == ["Bob", 65]
+      assert Keyword.Extra.get_all(opts, [:name, :age]) == ["Bob", 65]
     end
 
     test "uses nil for non-existent keys", ~M{opts} do
-      assert Keyword.Extra.get_keys(opts, [:name, :age, :weight]) == ["Bob", 65, nil]
+      assert Keyword.Extra.get_all(opts, [:name, :age, :weight]) == ["Bob", 65, nil]
     end
 
     test "uses the provided defaults when they are provided", ~M{opts} do
-      assert Keyword.Extra.get_keys(opts, [:name, :age, weight: 99.9]) == ["Bob", 65, 99.9]
+      assert Keyword.Extra.get_all(opts, [:name, :age, weight: 99.9]) == ["Bob", 65, 99.9]
     end
   end
 end

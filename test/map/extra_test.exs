@@ -26,6 +26,7 @@ defmodule Map.ExtraTest do
     end
   end
 
+
   describe "take_non_nil/2" do
     test "refuses to take fields that have nil values" do
       assert Map.Extra.take_non_nil(%{address: nil}, [:address]) ==
@@ -43,6 +44,7 @@ defmodule Map.ExtraTest do
         %{first_name: "Marc", last_name: "Jacobs"}
     end
   end
+
 
   describe "assert_keys!/3" do
     test "raises when the provided map does not have all of the specified keys" do
