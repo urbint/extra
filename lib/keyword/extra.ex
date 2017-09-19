@@ -76,11 +76,12 @@ defmodule Keyword.Extra do
 
 
   @doc """
-  Raises an ArgumentError error if `list` does not have the provided `key`.
+  Raises an ArgumentError if `list` does not have the provided `key`.
 
   ## Options
 
     * `:message`: `binary`, the message to raise with when the value is missing.
+
     * `:allow_nil_value`: `boolean`, Default: `true`. Set to true if a `nil` value
       should not raise.
 
@@ -102,6 +103,23 @@ defmodule Keyword.Extra do
 
       _ -> :ok
     end
+  end
+
+
+  @doc """
+  Raises an ArgumentError if the provided `list` does not have all of the specified `keys`.
+
+  ## Options
+
+    * `:message`: `binary`, the message to raise with when the value is missing.
+
+    * `:allow_nil_value`: `boolean`, Default: `true`. Set to true if a `nil` value
+      should not raise.
+
+  """
+  @spec assert_keys!(t, [key], keyword) :: :ok | no_return
+  def assert_keys!(list, keys, opts \\ []) do
+    keys |> Enum.each(&assert_key!(list, &1, opts))
   end
 
 

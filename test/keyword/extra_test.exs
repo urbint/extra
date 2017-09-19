@@ -65,6 +65,35 @@ defmodule Keyword.ExtraTest do
   end
 
 
+  describe "assert_keys!/3" do
+    setup do
+      list =
+        [fname: "Peter", lname: "Logan"]
+
+      {:ok, ~M{list}}
+    end
+
+    test "raises an ArgumentError when the provided list does not have all of the keys", ~M{list} do
+      assert_raise ArgumentError, fn ->
+        Keyword.Extra.assert_keys!(list, [:fname, :lname, :oops])
+      end
+    end
+
+    test "does not raise when the provided keys are present", ~M{list} do
+      assert Keyword.Extra.assert_keys!(list, [:fname, :lname]) == :ok
+    end
+
+    test "raises when a value is nil and :allow_nil_value is false", ~M{list} do
+      list =
+        Keyword.put(list, :nil_value, nil)
+
+      assert_raise ArgumentError, fn ->
+        Keyword.Extra.assert_keys!(list, [:fname, :lname, :nil_value], allow_nil_value: false)
+      end
+    end
+  end
+
+
   describe "fetch_all!/2" do
     setup do
       opts =
