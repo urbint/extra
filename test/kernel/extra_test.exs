@@ -72,14 +72,24 @@ defmodule Kernel.ExtraTest do
       def module_attr, do: @things
     end
 
+    defmodule TestModule3 do
+      import Kernel.Extra
+
+      defunion :empty_value, ["", nil]
+
+      def module_attr, do: @empty_values
+    end
+
     # Can't figure out how to test typespecs here, but maybe that's OK
 
     test "defines a function returning a list of the given values" do
       assert TestModule2.__union_things__() == [:foo, :bar, :baz]
+      assert TestModule3.__union_empty_values__() == ["", nil]
     end
 
     test "defines a module attribute for the list of given values" do
       assert TestModule2.module_attr() == [:foo, :bar, :baz]
+      assert TestModule3.module_attr() == ["", nil]
     end
   end
 

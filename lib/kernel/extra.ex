@@ -117,10 +117,12 @@ defmodule Kernel.Extra do
       end
 
   """
-  @spec defunion(name :: atom, [atom]) :: Macro.t
+  @spec defunion(name :: atom, [any]) :: Macro.t
   defmacro defunion(name, values) do
     type_rhs =
-      Enum.reduce(values, fn (x, acc) -> quote do: unquote(x) | unquote(acc) end)
+      values
+      |> Enum.map(&resolve_type/1)
+      |> Enum.reduce(fn x, acc -> quote do: unquote(x) | unquote(acc) end)
 
     # XXX use real pluralization, if it's ever necessary
     plural =
@@ -129,7 +131,7 @@ defmodule Kernel.Extra do
     quote do
       @type unquote(Macro.var(name, nil)) :: unquote(type_rhs)
 
-      Module.put_attribute __MODULE__, unquote(plural), unquote(values)
+      Module.put_attribute(__MODULE__, unquote(plural), unquote(values))
 
       @doc """
       Returns a list of all valid #{unquote(plural)}.
@@ -139,5 +141,22 @@ defmodule Kernel.Extra do
       def unquote(:"__union_#{plural}__")(), do: unquote(values)
     end
   end
+
+
+
+  ################################################################################
+  # Private Helpers
+  ################################################################################
+
+  # Elixir's @type system cannot represent every literal value but it can
+  # represent a subset of literal values.
+  #
+  # Eg the type system recognizes atoms such as :hello so a type annotation like
+  # @type :: :hello is valid, but for binary literals such as "hello", we need a
+  # type annotation like @type :: binary. `resolve_type/1` finds the nearest,
+  # most narrow type for a given `input`.
+  defp resolve_type(input) when is_binary(input), do: Macro.var(:binary, Kernel)
+  defp resolve_type(input) when is_float(input), do: Macro.var(:float, Kernel)
+  defp resolve_type(catchall), do: catchall
 
 end
