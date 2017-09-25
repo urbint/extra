@@ -20,4 +20,23 @@ defmodule ExUnit.ExtraTest do
       end
     end
   end
+
+  describe "assert_set_equality/2" do
+    test "correct for mapsets" do
+      assert_set_equality MapSet.new([:a, :b]), MapSet.new([:b, :a])
+
+      refute_set_equality MapSet.new([:a]), MapSet.new([:b, :a])
+    end
+
+    test "correct for lists" do
+      assert_set_equality [:a, :b], [:b, :a]
+      refute_set_equality [:a], [:b, :a]
+    end
+
+    test "correct for both" do
+      assert_set_equality MapSet.new([:a, :b]), [:b, :a]
+      assert_set_equality MapSet.new([:a, :b]), [:a, :b]
+      refute_set_equality MapSet.new([:a]), [:a, :b]
+    end
+  end
 end

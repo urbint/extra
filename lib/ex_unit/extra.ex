@@ -25,4 +25,38 @@ defmodule ExUnit.Extra do
     end
   end
 
+
+  @doc """
+  Compares two MapSets and asserts that they are equal.
+
+  Both arguments are passed through MapSet.new/1 before being compared.
+
+    iex> import ExUnit.Extra
+    ...> assert_set_equality [:a, :b], [:b, :a]
+    true
+
+  """
+  defmacro assert_set_equality(set_a, set_b) do
+    quote do
+      assert MapSet.new(unquote(set_a)) == MapSet.new(unquote(set_b))
+    end
+  end
+
+
+  @doc """
+  Compares two MapSets and asserts that they are NOT equal.
+
+  Both arguments are passed through MapSet.new/1 before being compared.
+
+    iex> import ExUnit.Extra
+    ...> refute_set_equality [:a, :b], [:a]
+    false
+
+  """
+  defmacro refute_set_equality(set_a, set_b) do
+    quote do
+      refute MapSet.new(unquote(set_a)) == MapSet.new(unquote(set_b))
+    end
+  end
+
 end
