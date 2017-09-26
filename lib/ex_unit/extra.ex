@@ -4,6 +4,8 @@ defmodule ExUnit.Extra do
 
   """
 
+  import ExUnit.Assertions
+
   @assert_receive_timeout Application.get_env(:ex_unit, :assert_receive_timeout, 100)
 
   @doc """
@@ -27,36 +29,29 @@ defmodule ExUnit.Extra do
 
 
   @doc """
-  Compares two MapSets and asserts that they are equal.
-
-  Both arguments are passed through MapSet.new/1 before being compared.
+  Convert two `Enumerable`s into `MapSet`s and asserts that they are equal.
 
     iex> import ExUnit.Extra
     ...> assert_set_equality [:a, :b], [:b, :a]
     true
 
   """
-  defmacro assert_set_equality(set_a, set_b) do
-    quote do
-      assert MapSet.new(unquote(set_a)) == MapSet.new(unquote(set_b))
-    end
+  def assert_set_equality(a, b) do
+    assert MapSet.new(a) == MapSet.new(b)
   end
 
 
   @doc """
-  Compares two MapSets and asserts that they are NOT equal.
+  Convert two `Enumerable`s into `MapSet`s and refutes that they are equal.
 
-  Both arguments are passed through MapSet.new/1 before being compared.
-
-    iex> import ExUnit.Extra
-    ...> refute_set_equality [:a, :b], [:a]
-    false
+      iex> import ExUnit.Extra
+      ...> refute_set_equality [:a, :b], [:a]
+      true
 
   """
-  defmacro refute_set_equality(set_a, set_b) do
-    quote do
-      refute MapSet.new(unquote(set_a)) == MapSet.new(unquote(set_b))
-    end
+  @spec refute_set_equality(Enum.t, Enum.t) :: boolean | no_return
+  def refute_set_equality(a, b) do
+    assert MapSet.new(a) != MapSet.new(b)
   end
 
 end

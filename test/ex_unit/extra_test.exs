@@ -3,6 +3,8 @@ defmodule ExUnit.ExtraTest do
 
   import ExUnit.Extra
 
+  doctest ExUnit.Extra
+
   describe "assert_receive_either/2" do
     test "matches on pattern_a" do
       send(self(), 1)
@@ -24,7 +26,6 @@ defmodule ExUnit.ExtraTest do
   describe "assert_set_equality/2" do
     test "correct for mapsets" do
       assert_set_equality MapSet.new([:a, :b]), MapSet.new([:b, :a])
-
       refute_set_equality MapSet.new([:a]), MapSet.new([:b, :a])
     end
 
@@ -33,10 +34,10 @@ defmodule ExUnit.ExtraTest do
       refute_set_equality [:a], [:b, :a]
     end
 
-    test "correct for both" do
+    test "correct for mixed" do
       assert_set_equality MapSet.new([:a, :b]), [:b, :a]
       assert_set_equality MapSet.new([:a, :b]), [:a, :b]
-      refute_set_equality MapSet.new([:a]), [:a, :b]
+      refute_set_equality [:a, :b, :c], MapSet.new([:a])
     end
   end
 end

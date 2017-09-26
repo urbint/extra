@@ -9,6 +9,7 @@ defmodule Extra.Mixfile do
      start_permanent: Mix.env == :prod,
      dialyzer: [
        plt_add_deps: :transitive,
+       plt_add_apps: [:ex_unit],
        ignore_warnings: "./.dialyzer-ignore-warnings.txt"
      ],
      name: "Extra",
