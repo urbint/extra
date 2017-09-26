@@ -269,4 +269,27 @@ defmodule Enum.Extra do
     end
   end
 
+
+  @doc """
+  Fold is akin to `Enum.reduce/3`, but treats the accumulator as the subject.
+
+      iex> Enum.Extra.fold(1, [2, 3, 4], &(&1 + &2))
+      10
+
+  Inversion of the accumulator and the `Enumerable` makes for convenient piping.
+  A contrived example:
+
+      User.new()
+      |> User.set_username("jimbo")
+      |> User.set_password(password)
+      |> Enum.Extra.fold(friends, &User.add_friend/2)
+      |> User.save()
+
+  Note that the ordering of the element and accumulator in the reducer
+  function is the same as in `Enum.reduce/2,3`.
+
+  """
+  @spec fold(any, Enum.t, (Enum.element, any -> any)) :: any
+  def fold(subject, enum, fun) when is_function(fun, 2),
+    do: Enum.reduce(enum, subject, fun)
 end

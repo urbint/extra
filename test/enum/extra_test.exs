@@ -150,4 +150,30 @@ defmodule Enum.ExtraTest do
          }
     end
   end
+
+
+  describe "fold/3" do
+    test "reduces properly" do
+      names =
+        [:jerry, :george, :elaine, :cosmo]
+
+      init =
+        []
+
+      folded =
+        Enum.Extra.fold(init, names, fn name, acc -> [name | acc] end)
+
+      assert folded == Enum.reverse(names)
+    end
+
+    test "handles an empty list" do
+      init =
+        {:cosmo, "Kramer"}
+
+      folded =
+        Enum.Extra.fold(init, [], fn _, _ -> :never_run end)
+
+      assert folded == init
+    end
+  end
 end
