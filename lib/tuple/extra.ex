@@ -11,6 +11,19 @@ defmodule Tuple.Extra do
   ##################################################################################
 
   @doc """
+  Wraps `value` in a two-element tuple with `tag` as the first element.
+
+  ## Examples
+
+    iex> Tuple.Extra.tag_with(12, :ok)
+    {:ok, 12}
+
+  """
+  @spec tag_with(value, tag) :: {tag, value} when tag: any, value: any
+  def tag_with(value, tag), do: {tag, value}
+
+
+  @doc """
   Unwraps an `:ok` tuple or raises an error.
 
   ## Examples
