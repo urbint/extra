@@ -245,4 +245,28 @@ defmodule Enum.Extra do
     |> Stream.map(fn {key, val} -> {key, f.(val)} end)
     |> Enum.into(Monoid.identity(enum))
   end
+
+
+  @doc """
+  Looks up the first item in an enumerable for which `predicate` returns a truthy value. If a value
+  is found, returns `{:ok, value}`, otherwise returns `:not_found`.
+
+  Essentially `Enum.find`, but with tuples in the return value for easier pattern matching.
+
+  ## Examples
+
+      iex> Enum.Extra.lookup(["foo", "bar", "tar"], &Regex.match?(~r/ar$/, &1))
+      {:ok, "bar"}
+      iex> Enum.Extra.lookup(["foo", "bar", "baz"], &Regex.match?(~r/ooo/, &1))
+      :not_found
+
+  """
+  @spec lookup(Enum.t, (any -> any)) :: {:ok, any} | :not_found
+  def lookup(enum, predicate) do
+    case Enum.find(enum, predicate) do
+      nil -> :not_found
+      x   -> {:ok, x}
+    end
+  end
+
 end
