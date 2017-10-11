@@ -88,18 +88,19 @@ defmodule Keyword.Extra do
   """
   @spec assert_key!(t, key, keyword) :: :ok | no_return
   def assert_key!(list, key, opts \\ []) do
-    message =
+    message = fn ->
       Keyword.get(opts, :message, "#{inspect(key)} is required to be in keyword list.")
+    end
 
     allow_nil_value? =
       Keyword.get(opts, :allow_nil_value, true)
 
     case Keyword.fetch(list, key) do
       {:ok, nil} when not allow_nil_value? ->
-        raise(ArgumentError, message)
+        raise(ArgumentError, message.())
 
       :error ->
-        raise(ArgumentError, message)
+        raise(ArgumentError, message.())
 
       _ -> :ok
     end
