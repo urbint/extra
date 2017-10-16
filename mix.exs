@@ -29,6 +29,7 @@ defmodule Extra.Mixfile do
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:ex_dash, "~> 0.1", only: [:dev]},
+      {:benchfella, "~> 0.3", only: [:dev]},
     ]
   end
 
