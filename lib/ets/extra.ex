@@ -42,24 +42,12 @@ defmodule ETS.Extra do
   """
   @spec stream_keys(table) :: Enum.t
   def stream_keys(table) when is_table(table) do
-    eot = :"$end_of_table"
-
     Stream.resource(
-      fn -> [] end,
+      fn -> :ets.first(table) end,
       fn
-        [] ->
-          case :ets.first(table) do
-            ^eot -> {:halt, []}
-            first_key -> {[first_key], first_key}
-          end
-
-        acc ->
-          case :ets.next(table, acc) do
-            ^eot -> {:halt, acc}
-            next_key -> {[next_key], next_key}
-          end
+        :"$end_of_table" -> {:halt, nil}
+        key              -> {[key], :ets.next(table, key)}
       end,
-
       fn _acc -> :ok end
     )
   end
