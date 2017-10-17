@@ -71,4 +71,52 @@ defmodule ETS.Extra do
     |> Stream.map(& :ets.lookup(table, &1) |> hd())
   end
 
+
+  @doc """
+  Copy all the data in the given ETS table to a new ETS table with the given name and options.
+
+  Given options are passed-through unchanged to `:ets.new`.
+
+  ## Examples
+
+      iex> original_table = :ets.new(:my_table, [])
+      iex> :ets.insert(original_table, {:foo, 1})
+      iex> :ets.insert(original_table, {:bar, 2})
+      iex> ETS.Extra.stream(original_table) |> Enum.to_list()
+      [bar: 2, foo: 1]
+      iex> new_table = ETS.Extra.copy(original_table, :new_table)
+      iex> ETS.Extra.stream(original_table) |> Enum.to_list()
+      [bar: 2, foo: 1]
+      iex> ETS.Extra.stream(new_table) |> Enum.to_list()
+      [bar: 2, foo: 1]
+
+  """
+  @spec copy(atom | :ets.tid, target_name, options) :: :ets.tid | atom
+    when target_name: atom,
+         options: [option],
+         option:
+           type |
+           access |
+           :named_table |
+           {:keypos, pos} |
+           {:heir, pid, heir_data} |
+           {:heir, :none} |
+           tweaks,
+         type: :bag | :compressed | :duplicate_bag | :ordered_set | :set,
+         access: :private | :protected | :public,
+         tweaks:
+           {:write_concurrency, boolean} |
+           {:read_concurrency, boolean} |
+           :compressed,
+         pos: pos_integer,
+         heir_data: term
+  def copy(source, destination, options \\ []) do
+    table =
+      :ets.new(destination, options)
+
+    stream(source) |> Enum.each(&:ets.insert(table, &1))
+
+    table
+  end
+
 end
