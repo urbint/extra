@@ -3,7 +3,10 @@ defmodule Stream.ExtraTest do
 
   use ExUnit.Case, async: true
 
+  import ExUnit.CaptureLog
+
   doctest Stream.Extra
+
 
   describe "on_finish/2" do
     test "calls function when the stream finishes enumerating" do
@@ -34,6 +37,18 @@ defmodule Stream.ExtraTest do
       assert_raise ArgumentError, fn ->
         enum |> Stream.Extra.unwrap_oks! |> Stream.run
       end
+    end
+  end
+
+
+  describe "unwrap_oks/2" do
+    test "logs when the log_errors option is passed" do
+      enum =
+        [{:ok, 1}, {:error, 2}, {:ok, 3}]
+
+      assert capture_log(fn ->
+        enum |> Stream.Extra.unwrap_oks(log_errors: true) |> Stream.run
+      end) =~ "Encountered :error tuple. {:error, 2}"
     end
   end
 

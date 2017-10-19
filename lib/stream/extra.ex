@@ -4,6 +4,8 @@ defmodule Stream.Extra do
 
   """
 
+  require Logger
+
 
   @doc """
   Streams tuples in the form of `{:ok, any}` or `{:error, any}`. Rejects `:error` tuples while unwrapping
@@ -14,11 +16,19 @@ defmodule Stream.Extra do
 
   """
   @spec unwrap_oks(Enumerable.t) :: Enumerable.t
-  def unwrap_oks(stream) do
+  def unwrap_oks(stream, opts \\ []) do
+    log_errors? =
+      Keyword.get(opts, :log_errors, false)
+
     stream
     |> Stream.filter(fn
       {:ok, _} -> true
-      {:error, _} -> false
+      {:error, _} = tuple ->
+        if log_errors? do
+          Logger.error("Encountered :error tuple. #{inspect(tuple)}")
+        end
+
+        false
     end)
     |> Stream.map(&elem(&1, 1))
   end
