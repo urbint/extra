@@ -15,14 +15,16 @@ defmodule Stream.Extra do
     [1]
 
   """
-  @spec unwrap_oks(Enumerable.t) :: Enumerable.t
+  @spec unwrap_oks(Enumerable.t, keyword) :: Enumerable.t
   def unwrap_oks(stream, opts \\ []) do
     log_errors? =
       Keyword.get(opts, :log_errors, false)
 
     stream
     |> Stream.filter(fn
-      {:ok, _} -> true
+      {:ok, _} ->
+        true
+
       {:error, _} = tuple ->
         if log_errors? do
           Logger.error("Encountered :error tuple. #{inspect(tuple)}")

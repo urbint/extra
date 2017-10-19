@@ -42,6 +42,14 @@ defmodule Stream.ExtraTest do
 
 
   describe "unwrap_oks/2" do
+    test "unwraps ok tuples" do
+      enum =
+        [{:ok, 1}, {:error, 2}, {:ok, 3}]
+
+      assert [1, 3] ==
+        enum |> Stream.Extra.unwrap_oks() |> Enum.into([])
+    end
+
     test "logs when the log_errors option is passed" do
       enum =
         [{:ok, 1}, {:error, 2}, {:ok, 3}]
