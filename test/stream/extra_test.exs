@@ -79,6 +79,35 @@ defmodule Stream.ExtraTest do
       assert MapSet.new(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", ""]) ==
         captured |> String.split("\n") |> MapSet.new()
     end
+
+    test "works with halting streams" do
+      table_a =
+        :ets.new(:table_a, [:ordered_set])
+      table_b =
+        :ets.new(:table_a, [:ordered_set])
+
+      Enum.each([1, 3, 6, 7], &:ets.insert(table_a, {&1, &1}))
+      Enum.each([2, 4, 5, 8, 9, 10], &:ets.insert(table_b, {&1, &1}))
+
+      assert [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] ==
+        Stream.Extra.sorted_merge(
+          ETS.Extra.stream_keys(table_a),
+          ETS.Extra.stream_keys(table_b)
+        ) |> Enum.to_list
+    end
+
+    test "works with empty streams" do
+      table_a =
+        :ets.new(:table_a, [:ordered_set])
+      table_b =
+        :ets.new(:table_a, [:ordered_set])
+
+      assert [] ==
+        Stream.Extra.sorted_merge(
+          ETS.Extra.stream_keys(table_a),
+          ETS.Extra.stream_keys(table_b)
+        ) |> Enum.to_list
+    end
   end
 
 end

@@ -183,8 +183,8 @@ defmodule Stream.Extra do
 
     # If we're down to only one enumerator left, just consume it until it's done
     case fun.({:cont, []}) do
-      {:suspended, [elem], next_fun} -> {:next, [next_fun], callback.(elem, acc)}
-      {:done, []} -> {:done, acc}
+      {:suspended, [elem], next_fun}           -> {:next, [next_fun], callback.(elem, acc)}
+      {stop, []} when stop in [:done, :halted] -> {:done, acc}
     end
   end
 
@@ -210,21 +210,25 @@ defmodule Stream.Extra do
           else
             {current, [{elem, next_fun} | peeked], finished_enums}
           end
-        {{:done, []}, idx}, {current, peeked, finished_enums} ->
+        {{stop, []}, idx}, {current, peeked, finished_enums} when stop in [:done, :halted] ->
           # Put a nil at the top of the peeked list that will later be removed so that the index of
           # the taken element stays stable
           {current, [nil | peeked], [idx | finished_enums]}
       end)
 
-    enums =
-      new_enums
-      |> Enum.reverse()
-      # After we're done, replace the enum that gave us the smallest value with its next thunk...
-      |> List.replace_at(idx_taken, next_fun_for_idx)
-      # and remove all the enums that have finished.
-      |> Enum.Extra.fold(finished_enums, &List.delete_at(&2, &1))
+    if next == :"$init" do
+      {:done, acc}
+    else
+      enums =
+        new_enums
+        |> Enum.reverse()
+        # After we're done, replace the enum that gave us the smallest value with its next thunk...
+        |> List.replace_at(idx_taken, next_fun_for_idx)
+        # and remove all the enums that have finished.
+        |> Enum.Extra.fold(finished_enums, &List.delete_at(&2, &1))
 
-    {:next, enums, callback.(next, acc)}
+      {:next, enums, callback.(next, acc)}
+    end
   end
 
   defp do_sorted_merge_close(enums) do
