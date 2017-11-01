@@ -292,4 +292,34 @@ defmodule Enum.Extra do
   @spec fold(any, Enum.t, (Enum.element, any -> any)) :: any
   def fold(subject, enum, fun) when is_function(fun, 2),
     do: Enum.reduce(enum, subject, fun)
+
+
+  @doc """
+  Behaves like `Enum.find/*` but returns the result wrapped in an `{:ok, data}` tuple.
+
+  This function is useful for `with` pipelines where matching on `{:ok, _}` when finding the result
+  is useful.
+
+  You can optionally specify a `default` which will *not* be wrapped in any tuple
+
+      iex> Enum.Extra.find_or_error([2, 3, 4], &(&1 == 2))
+      {:ok, 2}
+
+      iex> Enum.Extra.find_or_error([2, 3, 4], &(&1 == 5))
+      :error
+
+      iex> Enum.Extra.find_or_error([2, 3, 4], 5, &(&1 == 5))
+      5
+
+      iex> Enum.Extra.find_or_error([2, 3, 4], {:error, :not_found}, &(&1 == 5))
+      {:error, :not_found}
+
+  """
+  @spec find_or_error(Enum.t, Enum.default, (Enum.element -> any))
+        :: {:ok, Enum.element}
+         | :error
+         | Enum.default
+  def find_or_error(enum, default \\ :error, fun) when is_function(fun, 1) do
+    Enum.find_value(enum, default, fn x -> if fun.(x), do: {:ok, x} end)
+  end
 end
