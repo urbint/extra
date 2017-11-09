@@ -4,6 +4,8 @@ defmodule Enum.Extra do
 
   """
 
+  alias Enum.Iterator
+
 
   @doc """
   Runs the `fn` for each element in the `enum`, or short circuits if
@@ -321,5 +323,156 @@ defmodule Enum.Extra do
          | Enum.default
   def find_or_error(enum, default \\ :error, fun) when is_function(fun, 1) do
     Enum.find_value(enum, default, fn x -> if fun.(x), do: {:ok, x} end)
+  end
+
+
+  @doc """
+  Returns the enumerable from the `list_of_enums` which contains the most items.
+
+  If there is a tie an enum earlier in `list_of_enums` will take precedence.
+
+  Note: This function will count items in all the enums until there is only one left that has not
+  halted. Using this with two infinite enums will result in this function never returning.
+
+      iex> Enum.Extra.longest([[1], [2, 3], [4, 5, 6]])
+      [4, 5, 6]
+
+      iex> Enum.Extra.longest([[1], [2]])
+      [1]
+
+  """
+  @spec longest([Enum.t]) :: Enum.t
+  def longest(list_of_enums) when is_list(list_of_enums) and length(list_of_enums) > 0 do
+    {{quick_enum, quick_count}, slow_counts} =
+      partition_longest_quick_counts(list_of_enums)
+
+    {slow_iter, slow_count} =
+      slow_counts
+      |> :lists.reverse()
+      |> Enum.map(&Iterator.new/1)
+      |> do_longest(0)
+
+    cond do
+      quick_count <  slow_count ->
+        slow_iter.enum
+
+      quick_count >= slow_count ->
+        # If the longest quick_count is equal or longer to the longest slow_count we need to resume
+        # counting the longest slow count and see which is longer. We do this by taking the delta
+        # in item counts and adding 1. If it's the target length we know that `longest_iter`
+        # has *at least* that many items.
+        delta =
+          quick_count - slow_count
+
+        more_count =
+          slow_iter |> Stream.take(delta + 1) |> Enum.count()
+
+        cond do
+          more_count > delta  -> slow_iter.enum
+          more_count < delta  -> quick_enum
+          more_count == delta -> Enum.find(list_of_enums, & &1 in [quick_enum, slow_iter.enum])
+        end
+    end
+  end
+
+  # This function partitions the input `list_of_enums` based on whether or not they implement
+  # a non-default Enum.count (I call it a quick_count); We keep the the longest "quick count"
+  # and return it, along with the other enums that we need to count by iterating.
+  @spec partition_longest_quick_counts([Enum.t]) :: {{Enum.t, non_neg_integer}, [Enum.t]}
+  defp partition_longest_quick_counts(list_of_enums) do
+    list_of_enums
+    |> Enum.reduce({{nil, -1}, []},
+      fn enum, {{_longest_enum, longest_count} = longest, slow_counts} ->
+        case Enumerable.count(enum) do
+          {:ok, count} when count >  longest_count -> {{enum, count}, slow_counts}
+          {:ok, count} when count <= longest_count -> {longest, slow_counts}
+          {:error, _}                              -> {longest, [enum | slow_counts]}
+        end
+    end)
+  end
+
+  # Returns the longest Iterator passed in and the count of items we consumed from it.
+  @spec do_longest([Iterator.t], non_neg_integer) :: {Iterator.t, non_neg_integer}
+  defp do_longest(iterators, count) do
+    for {:ok, _, iter} <- Enum.map(iterators, &Iterator.next/1) do
+      iter
+    end
+    |> case do
+      # If all of the iterators are finished, return the enum from the first iterator in this batch
+      []        -> {hd(iterators), count}
+      # Otherwise, keep surviving ones and repeat
+      remaining -> do_longest(remaining, count + 1)
+    end
+  end
+
+
+  @doc """
+  Returns the enumerable from the `list_of_enums` which contains the fewest items.
+
+  If there is a tie an enum earlier in `list_of_enums` will take precedence.
+
+  Note: This function will count items in all the enums until one of them halts. Using only
+  infinite enums will result in this function never returning.
+
+      iex> Enum.Extra.shortest([[1], [2, 3], [4, 5, 6]])
+      [1]
+
+      iex> Enum.Extra.shortest([[1], [2]])
+      [1]
+
+  """
+  @spec shortest([Enum.t]) :: Enum.t
+  def shortest(list_of_enums) when is_list(list_of_enums) and length(list_of_enums) > 0 do
+    {{quick_enum, quick_count}, slow_counts} =
+      list_of_enums
+      |> Enum.reduce({{nil, nil}, []},
+          fn enum, {{_longest_enum, shortest_count} = shortest, slow_counts} ->
+            case Enumerable.count(enum) do
+              {:ok, count} when count <  shortest_count -> {{enum, count}, slow_counts}
+              {:ok, count} when count >= shortest_count -> {shortest, slow_counts}
+              {:error, _}                              ->  {shortest, [enum | slow_counts]}
+            end
+      end)
+
+    slow_counts
+    |> :lists.reverse()
+    |> Enum.map(&Iterator.new/1)
+    |> do_shortest(0, quick_count)
+    |> case do
+      # If we exceeded the count and none of them terminated by that, use the shorted_quick_enum
+      nil -> quick_enum
+      # If we have a tie, use the first one in the input list
+      {iter, ^quick_count} -> Enum.find(list_of_enums, &(&1 in [quick_enum, iter.enum]))
+      # Otherwise, use the one we found
+      {iter, _} -> iter.enum
+    end
+  end
+
+  # Returns the shortest iterator in `iterators` as well as the `count` of items
+  # we consumed to end it. Will consume at most `max` items at which point it will
+  # stop checking.
+  @spec do_shortest([Iterator.t], non_neg_integer, non_neg_integer)
+        :: {Iterator.t, non_neg_integer}
+         | nil
+  defp do_shortest(_iterators, count, max) when count > max, do: nil
+  defp do_shortest(iterators, count, max) do
+    iterate_all_or_return_finished(iterators, [])
+    |> case do
+      # If one of the iterators terminated, we short circuit out
+      %Iterator{} = iter -> {iter, count}
+      # Otherwise, reverse the converted enums, increment the count and try again!
+      iters              -> do_shortest(iters, count + 1, max)
+    end
+  end
+
+  # Consumes the next item from all the `iterators` or returns the first one that finished.
+  @spec iterate_all_or_return_finished([Iterator.t], [Iterator.t]) :: Iterator.t | [Iterator.t]
+  defp iterate_all_or_return_finished([], converted),
+    do: :lists.reverse(converted)
+  defp iterate_all_or_return_finished([iter | rest], converted) do
+    case Iterator.next(iter) do
+      {:error, :done}   -> iter
+      {:ok, _val, next} -> iterate_all_or_return_finished(rest, [next | converted])
+    end
   end
 end
