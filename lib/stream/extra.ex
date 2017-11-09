@@ -4,6 +4,8 @@ defmodule Stream.Extra do
 
   """
 
+  alias Enum.Iterator
+
   require Logger
 
 
@@ -137,21 +139,19 @@ defmodule Stream.Extra do
   """
   @spec sorted_merge([Enumerable.t], ((any, any) -> boolean)) :: Enumerable.t
   def sorted_merge(enums, comparator) when is_list(enums) and is_function(comparator, 2) do
-    enum_funs =
-      Enum.map(enums, fn enum ->
-        &Enumerable.reduce(enum, &1, fn x, [] -> {:suspend, [x]} end)
-      end)
+    iterators =
+      Enum.map(enums, &Iterator.new/1)
 
-    &do_sorted_merge(enum_funs, &1, &2, comparator)
+    &do_sorted_merge(iterators, &1, &2, comparator)
   end
 
   def sorted_merge(enum_a, enum_b), do: sorted_merge([enum_a, enum_b], &Kernel.<=/2)
   def sorted_merge(enums) when is_list(enums), do: sorted_merge(enums, &Kernel.<=/2)
 
-  defp do_sorted_merge(enums, {:halt, acc}, _callback, _comparator) do
+  defp do_sorted_merge(iterators, {:halt, acc}, _callback, _comparator) do
     # If the stream that's consuming us tells us to halt, tell all our enums to halt and return the
     # current accumulator
-    do_sorted_merge_close(enums)
+    do_sorted_merge_close(iterators)
     {:halted, acc}
   end
 
@@ -174,28 +174,28 @@ defmodule Stream.Extra do
     {:done, _acc} = other -> other
   end
 
-  defp do_sorted_merge_next_element([last_fun], acc, callback, _comparator) do
-    fun =
-      case last_fun do
-        fun when is_function(fun, 1)      -> fun
-        {_, fun} when is_function(fun, 1) -> fun
+  defp do_sorted_merge_next_element([last_iter], acc, callback, _comparator) do
+    iter =
+      case last_iter do
+        %Iterator{} = iter      -> iter
+        {_, %Iterator{} = iter} -> iter
       end
 
     # If we're down to only one enumerator left, just consume it until it's done
-    case fun.({:cont, []}) do
-      {:suspended, [elem], next_fun}           -> {:next, [next_fun], callback.(elem, acc)}
-      {stop, []} when stop in [:done, :halted] -> {:done, acc}
+    case Iterator.next(iter) do
+      {:ok, x, iter}                               -> {:next, [iter], callback.(x, acc)}
+      {:error, stop} when stop in [:done, :halted] -> {:done, acc}
     end
   end
 
-  defp do_sorted_merge_next_element(enums, acc, callback, comparator) do
-    {{next, idx_taken, next_fun_for_idx}, new_enums, finished_enums} =
+  defp do_sorted_merge_next_element(iterators, acc, callback, comparator) do
+    {{next, idx_taken, next_iter_for_idx}, new_iters, finished_iters} =
       # Walk through each of the enums...
-      enums
+      iterators
       # Peeking the next element...
       |> Stream.map(fn
-        thunk when is_function(thunk, 1) -> thunk.({:cont, []})
-        {x, thunk}                       -> {:suspended, [x], thunk}
+        %Iterator{} = iter      -> Iterator.next(iter)
+        {x, %Iterator{} = iter} -> {:ok, x, iter}
       end)
       # And retaining:
       # - the current minimum value taken,
@@ -204,37 +204,37 @@ defmodule Stream.Extra do
       # - a list of yielded values
       |> Stream.with_index()
       |> Enum.reduce({{:"$init", nil, nil}, [], []}, fn
-        {{:suspended, [elem], next_fun}, idx}, {{min, _, _} = current, peeked, finished_enums} ->
-          if min == :"$init" or comparator.(elem, min) do
-            {{elem, idx, next_fun}, [{elem, next_fun} | peeked], finished_enums}
+        {{:ok, x, next_iter}, idx}, {{min, _, _} = current, peeked, finished_iters} ->
+          if min == :"$init" or comparator.(x, min) do
+            {{x, idx, next_iter}, [{x, next_iter} | peeked], finished_iters}
           else
-            {current, [{elem, next_fun} | peeked], finished_enums}
+            {current, [{x, next_iter} | peeked], finished_iters}
           end
-        {{stop, []}, idx}, {current, peeked, finished_enums} when stop in [:done, :halted] ->
+        {{:error, stop}, idx}, {current, peeked, finished_iters} when stop in [:done, :halted] ->
           # Put a nil at the top of the peeked list that will later be removed so that the index of
           # the taken element stays stable
-          {current, [nil | peeked], [idx | finished_enums]}
+          {current, [nil | peeked], [idx | finished_iters]}
       end)
 
     if next == :"$init" do
       {:done, acc}
     else
-      enums =
-        new_enums
+      iterators =
+        new_iters
         |> Enum.reverse()
         # After we're done, replace the enum that gave us the smallest value with its next thunk...
-        |> List.replace_at(idx_taken, next_fun_for_idx)
+        |> List.replace_at(idx_taken, next_iter_for_idx)
         # and remove all the enums that have finished.
-        |> Enum.Extra.fold(finished_enums, &List.delete_at(&2, &1))
+        |> Enum.Extra.fold(finished_iters, &List.delete_at(&2, &1))
 
-      {:next, enums, callback.(next, acc)}
+      {:next, iterators, callback.(next, acc)}
     end
   end
 
-  defp do_sorted_merge_close(enums) do
-    Enum.each(enums, fn
-      fun when is_function(fun, 1)      -> fun.({:halt, []})
-      {_, fun} when is_function(fun, 1) -> fun.({:halt, []})
+  defp do_sorted_merge_close(iterators) do
+    Enum.each(iterators, fn
+      %Iterator{} = iter      -> Iterator.halt(iter)
+      {_, %Iterator{} = iter} -> Iterator.halt(iter)
     end)
   end
 
