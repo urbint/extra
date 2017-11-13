@@ -151,6 +151,20 @@ defmodule Enum.ExtraTest do
     end
   end
 
+  describe "count_by/2" do
+    test "returns counts per value returned by the value func" do
+      cast =
+        [%{fname: "Jerry",  lname: "Seinfeld", role: "star"},
+         %{fname: "George", lname: "Constanza", role: "costar"},
+         %{fname: "Cosmo",  lname: "Kramer", role: "costar"},
+         %{fname: "Jerry",  lname: "Zeinfeld", role: "alias"},
+        ]
+
+      assert Enum.Extra.count_by(cast, & &1.role) ==
+        %{"alias" => 1, "costar" => 2, "star" => 1}
+    end
+  end
+
 
   describe "fold/3" do
     test "reduces properly" do

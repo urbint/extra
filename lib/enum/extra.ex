@@ -130,6 +130,29 @@ defmodule Enum.Extra do
 
 
   @doc """
+  Reduces an enumerable into counts based on the result of a function.
+
+  Useful for determining various population distributions in a dataset.
+
+  ## Example
+
+      iex> txs = [%{id: "A", amt: 10_000}, %{id: "B", amt: 15_000}, %{id: "C", amt: 10_000}]
+      ...> txs |> Enum.Extra.count_by(& &1.amt)
+      %{10_000 => 2, 15_000 => 1}
+
+  """
+  @spec count_by([map], (map -> any)) :: %{any => non_neg_integer}
+  def count_by(enum, func) when is_function(func, 1) do
+    Enum.reduce(enum, %{}, fn item, acc ->
+      val =
+        func.(item)
+
+      Map.update(acc, val, 1, &(&1 + 1))
+    end)
+  end
+
+
+  @doc """
   Applies `mapping_fun` if `predicate` is not `false` or `nil`, otherwise returns `enum`.
 
   ## Examples
