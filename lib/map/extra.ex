@@ -102,4 +102,54 @@ defmodule Map.Extra do
   def fetch_all!(map, keys) do
     keys |> Enum.map(&Map.fetch!(map, &1))
   end
+
+
+  @doc """
+  Recursively flattens a nested map.
+
+  Currently this only works when the keys are strings. It accepts the following options:
+
+  ## Options
+
+    * `:namespaced` - Prepends the snakecased path to each key if set to `true`.
+      Defaults to `false`.
+
+    * `:delimiter` - The string to use as the delimiter when namespacing.
+      Defaults to `"_"`.
+
+  ## Examples
+
+    iex> Map.Extra.flatten(%{"person" => %{"first_name" => "Joe", "last_name" => "Montana"}})
+    %{"first_name" => "Joe", "last_name" => "Montana"}
+
+  """
+  @spec flatten(map, keyword) :: map
+  def flatten(map, opts \\ []) do
+    namespaced? =
+      Keyword.get(opts, :namespaced, false)
+
+    delimiter =
+      Keyword.get(opts, :delimiter, "_")
+
+    Enum.reduce(map, %{}, fn
+      {key, value}, acc when is_map(value) ->
+        flattened =
+          if namespaced? do
+            value
+            |> flatten(namespaced: namespaced?, delimiter: delimiter)
+            |> Stream.map(fn {child_key, value} -> {key <> delimiter <> child_key, value} end)
+            |> Enum.into(%{})
+          else
+            # there is no need to forward namespaced? or delimiter to flatten
+            # since namespaced is false
+            flatten(value)
+          end
+
+        Map.merge(acc, flattened)
+
+      {key, value}, acc ->
+        Map.put(acc, key, value)
+    end)
+  end
+
 end
