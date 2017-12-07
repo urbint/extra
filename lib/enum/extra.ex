@@ -222,10 +222,10 @@ defmodule Enum.Extra do
   @spec rename_keys(Enum.t, keymap :: map) :: keyword
   def rename_keys(enum, keymap) do
     enum
-    |> Enum.map(fn {key, val} = element ->
+    |> Stream.Extra.map_keys(fn key ->
       case Map.fetch(keymap, key) do
-        {:ok, new_key} -> {new_key, val}
-        :error         -> element
+        {:ok, new_key} -> new_key
+        :error         -> key
       end
     end)
     |> Enum.into(Monoid.identity(enum))
@@ -247,7 +247,7 @@ defmodule Enum.Extra do
   @spec map_keys(Enum.t, (any -> any)) :: Enum.t
   def map_keys(enum, f) do
     enum
-    |> Stream.map(fn {key, val} -> {f.(key), val} end)
+    |> Stream.Extra.map_keys(f)
     |> Enum.into(Monoid.identity(enum))
   end
 
@@ -267,7 +267,7 @@ defmodule Enum.Extra do
   @spec map_values(Enum.t, (any -> any)) :: Enum.t
   def map_values(enum, f) do
     enum
-    |> Stream.map(fn {key, val} -> {key, f.(val)} end)
+    |> Stream.Extra.map_values(f)
     |> Enum.into(Monoid.identity(enum))
   end
 

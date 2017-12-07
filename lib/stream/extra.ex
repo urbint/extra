@@ -10,6 +10,44 @@ defmodule Stream.Extra do
 
 
   @doc """
+  Maps the given function over the keys of the given keyed `enum` (a keyword or a map)
+
+  ## Examples
+
+      iex> %{foo: "bar", baz: "qux"} |> Stream.Extra.map_keys(&Atom.to_string/1) |> Enum.into(%{})
+      %{"foo" => "bar", "baz" => "qux"}
+
+      iex> [foo: "bar", baz: "qux"] |> Stream.Extra.map_keys(&Atom.to_string/1) |> Enum.to_list()
+      [{"foo", "bar"}, {"baz", "qux"}]
+
+  """
+  @spec map_keys(Enum.t, (any -> any)) :: Enum.t
+  def map_keys(enum, f) do
+    enum
+    |> Stream.map(fn {key, val} -> {f.(key), val} end)
+  end
+
+
+  @doc """
+  Maps the given function over the values of the given keyed `enum` (a keyword or a map)
+
+  ## Examples
+
+      iex> %{foo: "bar", baz: "qux"} |> Stream.Extra.map_values(&String.upcase/1) |> Enum.into(%{})
+      %{foo: "BAR", baz: "QUX"}
+
+      iex> [foo: "bar", baz: "qux"] |> Stream.Extra.map_values(&String.upcase/1) |> Enum.to_list()
+      [foo: "BAR", baz: "QUX"]
+
+  """
+  @spec map_values(Enum.t, (any -> any)) :: Enum.t
+  def map_values(enum, f) do
+    enum
+    |> Stream.map(fn {key, val} -> {key, f.(val)} end)
+  end
+
+
+  @doc """
   Streams tuples in the form of `{:ok, any}` or `{:error, any}`. Rejects `:error` tuples while unwrapping
   `:ok` tuples.
 
