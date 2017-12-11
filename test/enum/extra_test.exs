@@ -190,4 +190,29 @@ defmodule Enum.ExtraTest do
       assert folded == init
     end
   end
+
+  describe "longest/1" do
+    test "does not unnecessarily consume items" do
+      pid =
+        self()
+
+      enum_a =
+        [1, 2, 3, 4, 5]
+        |> Stream.each(&send(pid, &1))
+
+      enum_b =
+        [1, 2]
+
+      longest =
+        Enum.Extra.longest([enum_a, enum_b])
+
+      assert longest == enum_a
+
+      assert_received 1
+      assert_received 2
+      assert_received 3
+      refute_received 4
+      refute_received 5
+    end
+  end
 end

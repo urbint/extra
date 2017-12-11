@@ -423,6 +423,8 @@ defmodule Enum.Extra do
     |> case do
       # If all of the iterators are finished, return the enum from the first iterator in this batch
       []        -> {hd(iterators), count}
+      # If there is only one left, that must be our winner
+      [one]     -> {one, count}
       # Otherwise, keep surviving ones and repeat
       remaining -> do_longest(remaining, count + 1)
     end
