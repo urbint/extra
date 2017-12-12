@@ -496,8 +496,9 @@ defmodule Enum.Extra do
     do: :lists.reverse(converted)
   defp iterate_all_or_return_finished([iter | rest], converted) do
     case Iterator.next(iter) do
-      {:error, :done}   -> iter
-      {:ok, _val, next} -> iterate_all_or_return_finished(rest, [next | converted])
+      {:error, :done}     -> iter
+      {:error, :halted}   -> iter
+      {:ok, _val, next}   -> iterate_all_or_return_finished(rest, [next | converted])
     end
   end
 end
