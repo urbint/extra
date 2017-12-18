@@ -111,8 +111,8 @@ defmodule Map.Extra do
 
   ## Options
 
-    * `:namespaced` - Prepends the snakecased path to each key if set to `true`.
-      Defaults to `false`.
+    * `:namespace` - Prepends the snakecased path to each key if set to `true`.
+      Defaults to `true`.
 
     * `:delimiter` - The string to use as the delimiter when namespacing.
       Defaults to `"_"`.
@@ -120,13 +120,16 @@ defmodule Map.Extra do
   ## Examples
 
     iex> Map.Extra.flatten(%{"person" => %{"first_name" => "Joe", "last_name" => "Montana"}})
+    %{"person_first_name" => "Joe", "person_last_name" => "Montana"}
+
+    iex> Map.Extra.flatten(%{"person" => %{"first_name" => "Joe", "last_name" => "Montana"}}, namespace: false)
     %{"first_name" => "Joe", "last_name" => "Montana"}
 
   """
   @spec flatten(map, keyword) :: map
   def flatten(map, opts \\ []) do
     namespaced? =
-      Keyword.get(opts, :namespaced, false)
+      Keyword.get(opts, :namespace, true)
 
     delimiter =
       Keyword.get(opts, :delimiter, "_")

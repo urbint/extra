@@ -34,15 +34,26 @@ defmodule Map.ExtraTest do
     test "recursively flattens a map", ~M{nested_person} do
       expected =
         %{
-          "first_name" => "John",
-          "last_name"  => "Cleese",
-          "age"         => 78,
+          "a_first_name" => "John",
+          "a_b_last_name"  => "Cleese",
+          "a_b_c_age"         => 78,
         }
 
       assert Map.Extra.flatten(nested_person) == expected
     end
 
-    test "overwrites keys that share names" do
+    test "works with empty maps" do
+      assert Map.Extra.flatten(%{}) == %{}
+    end
+
+    test "does not namespace the keys if instructed", ~M{nested_query} do
+      expected =
+        %{"id" => 6, "depth" => 100}
+
+      assert Map.Extra.flatten(nested_query, namespace: false) == expected
+    end
+
+    test "overwrites keys that share names w/o namespacing" do
       input =
         %{
           "first_name" => "John",
@@ -52,26 +63,18 @@ defmodule Map.ExtraTest do
           }
         }
 
-      assert Map.Extra.flatten(input) |> Map.get("first_name") == :overwritten
-      assert Map.Extra.flatten(input) |> Map.get("last_name") == "Cleese"
-    end
+      result =
+        Map.Extra.flatten(input, namespace: false)
 
-    test "works with empty maps" do
-      assert Map.Extra.flatten(%{}) == %{}
-    end
-
-    test "namespaces the keys if instructed", ~M{nested_query} do
-      expected =
-        %{"id" => 4, "parcel_id" => 6, "parcel_depth" => 100}
-
-      assert Map.Extra.flatten(nested_query, namespaced: true) == expected
+      assert result["first_name"] == :overwritten
+      assert result["last_name"] == "Cleese"
     end
 
     test "allows a custom delimiter to be used when namespacing", ~M{nested_person} do
       expected =
         %{"a/first_name" => "John", "a/b/last_name" => "Cleese", "a/b/c/age" => 78}
 
-      assert Map.Extra.flatten(nested_person, namespaced: true, delimiter: "/") == expected
+      assert Map.Extra.flatten(nested_person, delimiter: "/") == expected
     end
   end
 
