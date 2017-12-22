@@ -135,6 +135,9 @@ defmodule Map.Extra do
       Keyword.get(opts, :delimiter, "_")
 
     Enum.reduce(map, %{}, fn
+      {key, %{__struct__: _} = value}, acc ->
+        Map.put(acc, key, value)
+
       {key, value}, acc when is_map(value) ->
         flattened =
           if namespaced? do

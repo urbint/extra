@@ -76,6 +76,24 @@ defmodule Map.ExtraTest do
 
       assert Map.Extra.flatten(nested_person, delimiter: "/") == expected
     end
+
+    test "handles structs in the value position" do
+      input = %{
+        "foo" => "bar",
+        "baz" => %{
+          "foo" => "bar",
+          "baz" => DateTime.utc_now()
+        }
+      }
+
+      expected = %{
+        "foo" => "bar",
+        "baz_foo" => "bar",
+        "baz_baz" => input["baz"]["baz"],
+      }
+
+      assert expected == Map.Extra.flatten(input, namespaced: true)
+    end
   end
 
 
